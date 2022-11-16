@@ -22,7 +22,7 @@ npm i -g yarn
 
 4. Clone project on your local machine by running `git clone https://github.com/Solutya/sol-basket-be.git`
 
-5. Go to the project directory `air-travel-management-be` and run `yarn` then `yarn prepare`.
+5. Go to the project directory `sol-basket-be` and run `yarn` then `yarn prepare`.
 
 6. Create `.env` file in your root directory.Then copy the contents of `.env.example` to `.env`.
 
