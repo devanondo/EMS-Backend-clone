@@ -1,15 +1,15 @@
 {
-  "name": "travel-management-be",
+  "name": "sol-ems-be",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "server.js",
   "type": "module",
-  "repository": "git@github.com:Solutya/sol-basket-be.git",
-  "author": "Shahriar <shahriarswim01@gmail.com>",
+  "repository": "git@github.com:Solutya/sol-ems-be.git",
+  "author": "Shahriar",
   "license": "MIT",
   "private": false,
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node app.js",
+    "dev": "nodemon server.js",
+    "start": "node server.js",
     "lint": "eslint ./*.js",
     "lint:fix": "eslint --fix ./*.js",
     "prepare": "husky install"
