@@ -25,6 +25,7 @@ app.get('/', (req, res) =>
     message: 'Server is running!',
   })
 );
+
 app.use('/api/v1', router);
 
 app.all('*', (req, res, next) => {
