@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
@@ -16,6 +17,7 @@ const options = [
   logger('tiny'),
   helmet(),
   express.json({ limit: '30mb' }),
+  cookieParser(),
 ];
 app.use(options);
 
