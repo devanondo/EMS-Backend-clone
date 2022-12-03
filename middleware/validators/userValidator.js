@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 
-export const userValidateRules = () => {
+export const userRegisterValidator = () => {
   return [
     body('email').isEmail().notEmpty(),
     body('password')

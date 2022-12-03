@@ -9,8 +9,8 @@ export const saveToken = (user, statusCode, res) => {
     httpOnly: true,
   };
   res.status(statusCode).cookie('token', token, options).json({
-    success: true,
-    user,
+    status: 'success',
+    data: user,
     token,
   });
 };

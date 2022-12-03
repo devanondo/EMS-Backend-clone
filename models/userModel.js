@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 
 const UserSchema = new Schema(
   {
@@ -63,16 +63,15 @@ const UserSchema = new Schema(
       type: String,
       default: 'preview.png',
     },
-    // leave:[
-    //   {
-    //     id: {
-    //       type: mongoose.Schema.ObjectId,
-    //       ref:"leave",
-    //       required:true,
-    //     },
-
-    //   }
-    // ]
+    leave: [
+      {
+        id: {
+          type: mongoose.Schema.ObjectId,
+          ref: 'Leave',
+          required: true,
+        },
+      },
+    ],
 
     //Personal Info
     birth: {

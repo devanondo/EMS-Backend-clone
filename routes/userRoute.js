@@ -1,40 +1,35 @@
 import { Router } from 'express';
-import { createDemo, getDemos } from '../controllers/demoController.js';
 import {
   changeUserRole,
-  getAllUser,
   getAUser,
   login,
   logout,
   registerUser,
   updateUser,
 } from '../controllers/userController.js';
-import { authorizeRole, isAuthenticatedUser } from '../middleware/auth.js';
-import { userValidateRules } from '../middleware/validators/userValidator.js';
+import { isAuthenticatedUser } from '../middleware/auth.js';
+import { restrictTo } from '../middleware/restrictTo.js';
+import { userRegisterValidator } from '../middleware/validators/userValidator.js';
 import { validate } from '../middleware/validators/validateResult.js';
 
 const router = Router();
-
-// routes
-router.get('/', getDemos);
-router.post('/', userValidateRules(), validate, createDemo);
 
 //User routes
 //Create or Register User
 router.post(
   '/register',
   isAuthenticatedUser,
-  authorizeRole('admin'),
-  userValidateRules(),
+  restrictTo('admin'),
+  userRegisterValidator(),
   validate,
   registerUser
 );
 
 //Update users
-router.put('/update', isAuthenticatedUser, updateUser);
+router.put('/', isAuthenticatedUser, updateUser);
 
-//Get a user
-router.get('/:id', isAuthenticatedUser, getAUser);
+//Get  user
+router.get('/', isAuthenticatedUser, getAUser);
 
 //Login user
 router.post('/login', login);
@@ -43,9 +38,6 @@ router.post('/login', login);
 router.post('/logout', logout);
 
 //Change user role --admin
-router.put('/role', isAuthenticatedUser, authorizeRole('admin'), changeUserRole);
-
-//Get All User
-router.get('/all', isAuthenticatedUser, getAllUser);
+router.patch('/role', isAuthenticatedUser, restrictTo('admin'), changeUserRole);
 
 export const userRoute = router;

@@ -22,21 +22,23 @@ export const registerUser = catchAsync(async (req, res, next) => {
 
 //Update user
 export const updateUser = catchAsync(async (req, res, next) => {
-  const { email, id } = req.query;
+  const { id } = req.query;
 
-  const user = await User.findOne({ email: email, _id: id });
-  if (!user) next(new AppError('Employee not found!', 403));
+  const user = await User.findOne({ _id: id });
 
-  const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+  if (!user) {
+    return next(new AppError('Employee not found!', 403));
+  }
+
+  await User.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
   });
 
   res.status(201).json({
-    success: true,
+    status: 'success',
     message: 'User Updated successfully',
-    updatedUser,
   });
 });
 
@@ -67,20 +69,29 @@ export const logout = catchAsync(async (req, res, next) => {
   });
 
   res.status(200).json({
-    success: true,
+    status: 'success',
     message: 'Logged Out Successfully',
   });
 });
 
-//Get a User
+//Get  User
 export const getAUser = catchAsync(async (req, res, next) => {
-  const user = await User.findOne({ _id: req.params.id });
-  if (!user) next(new AppError('User not found!', 403));
+  const { id } = req.query;
+  const filters = {};
+
+  if (id) {
+    filters._id = id;
+  }
+
+  const users = await User.find(filters).lean().sort({ updatedAt: -1 });
+
+  if (!users) {
+    return next(new AppError('User not found!', 403));
+  }
 
   res.status(201).json({
-    success: true,
-    message: 'User get successfully',
-    user,
+    status: 'success',
+    data: users,
   });
 });
 
@@ -88,9 +99,14 @@ export const getAUser = catchAsync(async (req, res, next) => {
 export const changeUserRole = catchAsync(async (req, res, next) => {
   const { id, role } = req.query;
 
+  const filter = {};
+  if (id) {
+    filter._id = id;
+  }
+
   const user = await User.findByIdAndUpdate(
     id,
-    { role: role },
+    { $set: { role: role } },
     {
       new: true,
       runValidators: 'true',
@@ -98,20 +114,11 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
     }
   );
 
-  if (!user) return new AppError('Internal Server Error', 500);
-
+  if (!user) {
+    return next(new AppError('Internal Server Error', 500));
+  }
   res.status(200).json({
-    success: true,
+    status: 'success',
     message: 'Role updated successfully',
-  });
-});
-
-//Get All User
-export const getAllUser = catchAsync(async (req, res) => {
-  const users = await User.find();
-
-  res.status(201).json({
-    success: true,
-    users,
   });
 });
