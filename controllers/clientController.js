@@ -4,7 +4,7 @@ import catchAsync from '../utils/catchAsync.js';
 
 //Create Client Account
 export const createClient = catchAsync(async (req, res, next) => {
-  const { name, email, designation, companyName } = req.body;
+  const { name, email, phone, designation, companyName } = req.body;
 
   const user = await Client.findOne({ email: email });
   if (user) return next(new AppError('Client already exists..!', 403));
@@ -14,6 +14,7 @@ export const createClient = catchAsync(async (req, res, next) => {
     email,
     designation,
     companyName,
+    phone,
     createdBy: req.user._id,
   });
   res.status(200).json({
@@ -24,9 +25,9 @@ export const createClient = catchAsync(async (req, res, next) => {
 
 //Update client account
 export const updateClient = catchAsync(async (req, res, next) => {
-  const { id, email } = req.query;
+  const { id } = req.query;
 
-  const client = Client.findOne({ _id: id, email: email });
+  const client = Client.findOne({ _id: id });
   if (!client) return next(new AppError('Account not found!', 404));
 
   await Client.findByIdAndUpdate(id, req.body, {
@@ -48,7 +49,7 @@ export const getClient = catchAsync(async (req, res, next) => {
 
   if (id) filters._id = id;
 
-  const clients = await Client.find(filters).lean.sort({ updatedAt: -1 });
+  const clients = await Client.find(filters).lean().sort({ updatedAt: -1 });
 
   res.status(200).json({
     status: 'success',
