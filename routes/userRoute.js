@@ -26,7 +26,7 @@ router.post(
 );
 
 //Update users
-router.put('/', isAuthenticatedUser, updateUser);
+router.put('/', isAuthenticatedUser, restrictTo('admin', 'user'), updateUser);
 
 //Get  user
 router.get('/', isAuthenticatedUser, getAUser);
