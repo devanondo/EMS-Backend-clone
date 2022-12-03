@@ -5,6 +5,6 @@ import { PORT } from './config/siteEnv.js';
 connectDatabase()
   .then(() => {
     console.log('DB Connected!');
-    app.listen(PORT, () => console.log(`Server Started on Port: ${PORT}`));
+    app.listen(PORT, () => console.log(`Server Started on the Port: ${PORT}`));
   })
   .catch((error) => console.log(error.message));
