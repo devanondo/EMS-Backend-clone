@@ -63,12 +63,23 @@ const UserSchema = new Schema(
       type: String,
       default: 'preview.png',
     },
+
+    //Leave
     leave: [
       {
         id: {
           type: mongoose.Schema.ObjectId,
           ref: 'Leave',
-          required: true,
+        },
+      },
+    ],
+
+    //Attendance
+    attendance: [
+      {
+        id: {
+          type: mongoose.Schema.ObjectId,
+          ref: 'Attendance',
         },
       },
     ],
