@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
@@ -16,13 +17,14 @@ const options = [
   logger('tiny'),
   helmet(),
   express.json({ limit: '30mb' }),
+  cookieParser(),
 ];
 app.use(options);
 
 app.get('/', (req, res) =>
   res.json({
     status: 'success',
-    message: 'Server is running!',
+    message: 'Server is running wow!',
   })
 );
 
