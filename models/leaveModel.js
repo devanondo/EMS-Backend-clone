@@ -22,14 +22,14 @@ const LeaveSchema = new Schema(
   
         numberOfDays: {
           type: Number,
-          default: '',
-          required: [false, 'Number Of Days Date is required'],
+          default: 0,
+          required: [true, 'Number Of Days Date is required'],
         },
   
         remainingLeaves: {
           type: Number,
-          default: '',
-          required: [false, 'Remaining Leaves is required'],
+          default: 20,
+          required: [true, 'Remaining Leaves is required'],
         },
   
         totalLeaves: {

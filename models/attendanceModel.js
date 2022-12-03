@@ -3,15 +3,15 @@ import { model, Schema } from 'mongoose';
 const AttendanceSchema = new Schema(
   {
     punchIn: {
-      type: String,
-      default: '',
-      required: [false, 'Punch In Time is required'],
+      type: Date,
+      default: Date.now(),
+      required: [true, 'Punch In Time is required'],
     },
 
     punchOut: {
-      type: String,
-      default: '',
-      required: [false, 'Punch Out Time is required'],
+      type: Date,
+      default: Date.now(),
+      required: [true, 'Punch Out Time is required'],
     },
 
     production: {
