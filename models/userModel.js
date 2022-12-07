@@ -53,6 +53,15 @@ const UserSchema = new Schema(
         result: {
           type: String,
         },
+        duration: {
+          start: {
+            type: String,
+          },
+          end: {
+            type: String,
+          },
+        },
+
         outof: {
           type: String,
           default: '5',
@@ -103,31 +112,29 @@ const UserSchema = new Schema(
     },
 
     //Emergency Contact
-    emergency: [
-      {
-        ename: {
-          type: String,
-        },
-        enid: {
-          type: String,
-        },
-        erelationships: {
-          type: String,
-        },
-        ephone: {
-          type: String,
-        },
-        ematerialstatus: {
-          type: String,
-        },
+    emergency: {
+      ename: {
+        type: String,
       },
-    ],
+      enid: {
+        type: String,
+      },
+      erelationships: {
+        type: String,
+      },
+      ephone: {
+        type: String,
+      },
+      ematerialstatus: {
+        type: String,
+      },
+    },
+
     salary: {
       type: String,
     },
     joindate: {
-      type: Date,
-      default: new Date(),
+      type: String,
     },
   },
   { timestamps: true }
