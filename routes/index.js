@@ -18,10 +18,10 @@ router.use('/leave', leaveRoutes);
 router.use('/holiday', HolidayRoutes);
 router.use('/attendance', AttendanceRoutes);
 
-//User route
+// User route
 router.use('/user', userRoute);
 
-//Client Route
+// Client Route
 router.use('/client', clientRoute);
 
 export default router;

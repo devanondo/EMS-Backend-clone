@@ -12,7 +12,7 @@ import { validate } from '../middleware/validators/validateResult.js';
 
 const router = Router();
 
-//Create client account
+// Create client account
 router.post(
   '/',
   clientRegisterValidator(),
@@ -22,13 +22,13 @@ router.post(
   createClient
 );
 
-//Get Client Account details
+// Get Client Account details
 router.get('/', isAuthenticatedUser, restrictTo('admin'), getClient);
 
-//Update Client Account
+// Update Client Account
 router.put('/', isAuthenticatedUser, restrictTo('admin'), updateClient);
 
-//Delete Client Account
+// Delete Client Account
 router.delete('/', isAuthenticatedUser, restrictTo('admin'), deleteClient);
 
 export const clientRoute = router;

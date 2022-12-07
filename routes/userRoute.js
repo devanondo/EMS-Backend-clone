@@ -17,8 +17,8 @@ import { validate } from '../middleware/validators/validateResult.js';
 
 const router = Router();
 
-//User routes
-//Create or Register User
+// User routes
+// Create or Register User
 router.post(
   '/register',
   isAuthenticatedUser,
@@ -27,6 +27,10 @@ router.post(
   validate,
   registerUser
 );
+
+
+// Get  user
+router.get('/', isAuthenticatedUser, getAUser);
 
 //Update users
 router.put('/', isAuthenticatedUser, restrictTo('admin', 'user'), updateUser);
@@ -43,13 +47,14 @@ router.get('/', getAUser);
 //Get logged in user
 router.get('/self', isAuthenticatedUser, loginUser);
 
-//Login user
+
+// Login user
 router.post('/login', login);
 
-//Logout user
+// Logout user
 router.post('/logout', logout);
 
-//Change user role --admin
+// Change user role --admin
 router.patch('/role', isAuthenticatedUser, restrictTo('admin'), changeUserRole);
 
 export const userRoute = router;
