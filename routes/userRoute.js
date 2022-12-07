@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import {
+  addEducation,
   changeUserRole,
+  deleteEducation,
   getAUser,
   login,
+  loginUser,
   logout,
   registerUser,
   updateUser,
@@ -28,8 +31,17 @@ router.post(
 //Update users
 router.put('/', isAuthenticatedUser, restrictTo('admin', 'user'), updateUser);
 
+//add education for user
+router.post('/education', addEducation);
+
+//Delete Education
+router.delete('/education', isAuthenticatedUser, deleteEducation);
+
 //Get  user
-router.get('/', isAuthenticatedUser, getAUser);
+router.get('/', getAUser);
+
+//Get logged in user
+router.get('/self', isAuthenticatedUser, loginUser);
 
 //Login user
 router.post('/login', login);
