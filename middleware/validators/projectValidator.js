@@ -9,7 +9,8 @@ export const projectValidateRules = () => {
     body('rate').isString().notEmpty(),
     body('priority').isString().notEmpty(),
     body('projectLeader').isString().notEmpty(),
-    body('teamMember').isString().notEmpty(),
     body('address').isString().notEmpty(),
+    body('description').isString().notEmpty(),
+    
   ];
 };

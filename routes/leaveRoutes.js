@@ -13,9 +13,14 @@ import { validate } from '../middleware/validators/validateResult.js';
 const router = Router();
 
 // routes
-router.get('/', isAuthenticatedUser, restrictTo('admin, user'), getLeaves);
-router.post('/', isAuthenticatedUser, restrictTo('admin, user'), leaveValidateRules(), validate, createLeave);
-router.put('/:id', isAuthenticatedUser, restrictTo('admin, user'), updateLeave);
-router.delete('/:id', isAuthenticatedUser, restrictTo('admin, user'), deleteLeave);
+// router.get('/', isAuthenticatedUser, restrictTo('admin, user'), getLeaves);
+// router.post('/', isAuthenticatedUser, restrictTo('admin, user'), leaveValidateRules(), validate, createLeave);
+// router.put('/:id', isAuthenticatedUser, restrictTo('admin, user'), updateLeave);
+// router.delete('/:id', isAuthenticatedUser, restrictTo('admin, user'), deleteLeave);
+
+router.get('/', getLeaves);
+router.post('/', leaveValidateRules(), validate, createLeave);
+router.put('/:id', updateLeave);
+router.delete('/:id', deleteLeave);
 
 export const leaveRoutes = router;

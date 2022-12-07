@@ -17,7 +17,7 @@ export const createHoliday = catchAsync(async (req, res) => {
       message: 'Holiday Created Successfully',
     });
   } else {
-    res.status(201).json({
+    res.status(404).json({
       status: 'failed',
       message: 'Please change your date',
     });
