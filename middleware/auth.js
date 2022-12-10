@@ -4,14 +4,13 @@ import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
 export const isAuthenticatedUser = catchAsync(async (req, res, next) => {
-  const { token } = req.cookies;
+  const { token } = req.headers;
 
   if (!token) return next(new AppError('Please login to access to this resource', 401));
 
   const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
   req.user = await User.findById(decodedData.id);
-
   next();
 });
 
