@@ -16,4 +16,6 @@ router.post('/', attendanceValidateRules(), validate, createAttendance);
 router.put('/:id', updateAttendance);
 router.delete('/:id', deleteAttendance);
 
+
+
 export const AttendanceRoutes = router;

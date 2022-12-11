@@ -15,8 +15,10 @@ const router = Router();
 router.use('/demo', demoRoutes);
 router.use('/project', projectRoutes);
 router.use('/leave', leaveRoutes);
+router.use('/total-leave', leaveRoutes);
 router.use('/holiday', HolidayRoutes);
 router.use('/attendance', AttendanceRoutes);
+
 
 // User route
 router.use('/user', userRoute);

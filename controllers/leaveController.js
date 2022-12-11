@@ -1,5 +1,6 @@
 import catchAsync from '../utils/catchAsync.js';
 import { Leave } from '../models/leaveModel.js';
+import { TotalLeaves } from '../models/totalLeaveModel.js';
 
 // Create a Leave
 export const createLeave = catchAsync(async (req, res) => {
@@ -11,14 +12,16 @@ export const createLeave = catchAsync(async (req, res) => {
   if (diffInDays > 0) {
     const totalLeave = 20;
     const remainingLeaves = totalLeave - diffInDays;
-
+    const TotalLeave = await TotalLeaves.find().lean();
+    const {_id}= TotalLeave[0]
     await Leave.create({
       leaveType,
       from,
       to,
       leaveReason,
       numberOfDays: diffInDays,
-      remainingLeaves,
+      // remainingLeaves,
+      totalLeaves: _id
     });
     res.status(201).json({
       status: 'success',
@@ -40,7 +43,7 @@ export const getLeaves = catchAsync(async (req, res) => {
   if (did) {
     filters._id = did;
   }
-  const Projects = await Leave.find(filters).lean().sort({ updatedAt: -1 });
+  const Projects = await Leave.find(filters).populate("leaveType", "-_id").sort({ updatedAt: -1 });
   res.status(200).json({
     status: 'success',
     data: Projects,
@@ -49,15 +52,16 @@ export const getLeaves = catchAsync(async (req, res) => {
 
 // Update a Leave
 export const updateLeave = catchAsync(async (req, res) => {
-  console.log(req.body);
+ 
   const { leaveType, from, to, leaveReason, leaveStatus } = req.body;
-
   const diffInMs = new Date(to) - new Date(from);
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
+  const TotalLeave = await TotalLeaves.find().lean();
+
   if (diffInDays > 0) {
-    const totalLeave = 20;
-    const remainingLeaves = totalLeave - diffInDays;
+
+    const remainingLeaves = TotalLeave[0].totalLeaves - diffInDays;
     
     const UpdateLeave = await Leave.findByIdAndUpdate(
       req.params.id,
