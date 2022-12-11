@@ -3,12 +3,14 @@ import {
   addEducation,
   changeUserRole,
   deleteEducation,
+  deleteUser,
   getAUser,
   login,
   loginUser,
   logout,
   registerUser,
   updateUser,
+  updateUserRole,
 } from '../controllers/userController.js';
 import { isAuthenticatedUser } from '../middleware/auth.js';
 import { restrictTo } from '../middleware/restrictTo.js';
@@ -22,7 +24,7 @@ const router = Router();
 router.post(
   '/register',
   isAuthenticatedUser,
-  restrictTo('admin'),
+  restrictTo('admin', 'superadmin'),
   userRegisterValidator(),
   validate,
   registerUser
@@ -30,6 +32,12 @@ router.post(
 
 //Update users
 router.put('/', isAuthenticatedUser, restrictTo('admin', 'user'), updateUser);
+
+//Update user role
+router.put('/role', isAuthenticatedUser, restrictTo('admin', 'superadmin'), updateUserRole);
+
+//Delete user
+router.delete('/', isAuthenticatedUser, restrictTo('admin', 'superadmin'), deleteUser);
 
 //add education for user
 router.post('/education', addEducation);

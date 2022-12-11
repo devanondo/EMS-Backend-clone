@@ -19,18 +19,17 @@ export const registerUser = catchAsync(async (req, res, next) => {
 
   const user = await User.create(req.body);
 
+  console.log(user);
+
   res.status(200).json({
     status: 'success',
     message: 'User Created Successfully',
   });
-
-  saveToken(user, 200, res);
 });
 
 //Update user
 export const updateUser = catchAsync(async (req, res, next) => {
   const { id } = req.query;
-  console.log(req.body, 'body');
   const user = await User.findOne({ _id: id });
 
   if (!user) {
@@ -49,11 +48,49 @@ export const updateUser = catchAsync(async (req, res, next) => {
   });
 });
 
+//Delete User
+export const deleteUser = catchAsync(async (req, res, next) => {
+  const { id } = req.query;
+  const user = await User.findById(id);
+  if (!user) return next(AppError('User not found', 404));
+
+  const roles = ['admin', 'superadmin'];
+
+  if (roles.includes(user.role)) {
+    return next(new AppError(`You cannot remove  ${user.role}`));
+  }
+
+  await User.findByIdAndDelete({ _id: id });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'User deleted successfully',
+  });
+});
+
+//Update User role
+export const updateUserRole = catchAsync(async (req, res, next) => {
+  const { id, role } = req.query;
+
+  await User.findByIdAndUpdate(
+    { _id: id },
+    { role: role },
+    {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Role updated successfully',
+  });
+});
+
 //Add education
 export const addEducation = catchAsync(async (req, res, next) => {
   const { id } = req.query;
-
-  console.log(id);
 
   const user = await User.findById(id);
   if (!user) return next(AppError('User not found!', 404));
