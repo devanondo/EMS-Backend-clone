@@ -15,14 +15,16 @@ const router = Router();
 router.use('/demo', demoRoutes);
 router.use('/project', projectRoutes);
 router.use('/leave', leaveRoutes);
+router.use('/total-leave', leaveRoutes);
 router.use('/holiday', HolidayRoutes);
 router.use('/attendance', AttendanceRoutes);
 router.use('/admin', extraRoute);
 
-//User route
+
+// User route
 router.use('/user', userRoute);
 
-//Client Route
+// Client Route
 router.use('/client', clientRoute);
 
 export default router;

@@ -4,10 +4,10 @@ import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import { saveToken } from '../utils/saveToken.js';
 
-//Register user
+// Register user
 export const registerUser = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  const isExistUser = await User.findOne({ email: email });
+  const isExistUser = await User.findOne({ email });
 
   if (isExistUser) {
     return next(new AppError('Email already exists!', 403));
@@ -27,7 +27,7 @@ export const registerUser = catchAsync(async (req, res, next) => {
   });
 });
 
-//Update user
+// Update user
 export const updateUser = catchAsync(async (req, res, next) => {
   const { id } = req.query;
   const user = await User.findOne({ _id: id });
@@ -47,6 +47,7 @@ export const updateUser = catchAsync(async (req, res, next) => {
     message: 'User Updated successfully',
   });
 });
+
 
 //Delete User
 export const deleteUser = catchAsync(async (req, res, next) => {
@@ -147,6 +148,7 @@ export const deleteEducation = catchAsync(async (req, res, next) => {
 // });
 
 //Login user
+
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -155,6 +157,7 @@ export const login = catchAsync(async (req, res, next) => {
   }
 
   const user = await User.findOne({ email }).select('password');
+
 
   if (!user) return next(new AppError('User not found!', 403));
 
@@ -165,7 +168,7 @@ export const login = catchAsync(async (req, res, next) => {
   saveToken(user, 200, res);
 });
 
-//Logout User
+// Logout User
 export const logout = catchAsync(async (req, res, next) => {
   res.cookie('token', null, {
     expires: new Date(Date.now()),
@@ -178,7 +181,7 @@ export const logout = catchAsync(async (req, res, next) => {
   });
 });
 
-//Get  User
+// Get  User
 export const getAUser = catchAsync(async (req, res, next) => {
   const { id } = req.query;
   const filters = {};
@@ -199,6 +202,8 @@ export const getAUser = catchAsync(async (req, res, next) => {
   });
 });
 
+
+
 //Get login user
 export const loginUser = catchAsync(async (req, res, next) => {
   const { _id } = req.user;
@@ -213,6 +218,7 @@ export const loginUser = catchAsync(async (req, res, next) => {
 });
 
 //Change User Role
+
 export const changeUserRole = catchAsync(async (req, res, next) => {
   const { id, role } = req.query;
 
@@ -223,7 +229,7 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
 
   const user = await User.findByIdAndUpdate(
     id,
-    { $set: { role: role } },
+    { $set: { role } },
     {
       new: true,
       runValidators: 'true',

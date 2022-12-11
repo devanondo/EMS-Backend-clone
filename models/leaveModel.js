@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 
 const LeaveSchema = new Schema(
     {
@@ -28,14 +28,14 @@ const LeaveSchema = new Schema(
   
         remainingLeaves: {
           type: Number,
-          default: 20,
+          default: 24,
           required: [true, 'Remaining Leaves is required'],
         },
   
         totalLeaves: {
-          type: Number,
-          default: 20,
-          required: [true, 'Priority is required'],
+          type: mongoose.Types.ObjectId,
+          ref: "TotalLeaves"
+         
         },
   
         leaveReason: {
