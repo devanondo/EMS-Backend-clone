@@ -36,7 +36,9 @@ const UserSchema = new Schema(
     },
     address: [
       {
-        type: String,
+        address1: {
+          type: String,
+        },
       },
     ],
     education: [
