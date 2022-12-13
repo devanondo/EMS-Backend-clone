@@ -34,25 +34,25 @@ router.post(
 // Get  user
 router.get('/', isAuthenticatedUser, getAUser);
 
-//Update users
+// Update users
 router.put('/', isAuthenticatedUser, restrictTo('admin', 'user'), updateUser);
 
-//Update user role
+// Update user role
 router.put('/role', isAuthenticatedUser, restrictTo('admin', 'superadmin'), updateUserRole);
 
-//Delete user
+// Delete user
 router.delete('/', isAuthenticatedUser, restrictTo('admin', 'superadmin'), deleteUser);
 
-//add education for user
+// add education for user
 router.post('/education', addEducation);
 
-//Delete Education
+// Delete Education
 router.delete('/education', isAuthenticatedUser, deleteEducation);
 
-//Get  user
+// Get  user
 router.get('/', getAUser);
 
-//Get logged in user
+// Get logged in user
 router.get('/self', isAuthenticatedUser, loginUser);
 
 

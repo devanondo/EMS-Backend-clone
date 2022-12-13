@@ -3,7 +3,7 @@ import { model, Schema } from 'mongoose';
 const TotalLeave = new Schema(
   {
     totalLeaves: {
-      type: String,
+      type: Number,
       default: 24,
       required: [true, 'From Date is required'],
     },
