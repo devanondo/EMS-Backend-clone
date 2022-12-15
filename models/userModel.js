@@ -73,15 +73,14 @@ const UserSchema = new Schema(
       default: 'preview.png',
     },
 
-    //Leave
+    // Leave
     leave: [
       {
-        id: {
           type: mongoose.Schema.ObjectId,
           ref: 'Leave',
-        },
       },
     ],
+
 
     project: [
       {
@@ -102,7 +101,7 @@ const UserSchema = new Schema(
       },
     ],
 
-    //Personal Info
+    // Personal Info
     birth: {
       type: String,
     },
@@ -120,7 +119,7 @@ const UserSchema = new Schema(
       type: String,
     },
 
-    //Emergency Contact
+    // Emergency Contact
     emergency: {
       ename: {
         type: String,
@@ -148,12 +147,14 @@ const UserSchema = new Schema(
   },
   { timestamps: true }
 );
-
-//JWT TOKEN
+UserSchema.index({ username: 'text' });
+// JWT TOKEN
 UserSchema.methods.getJWTToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
+
+
 
 export const User = model('User', UserSchema);

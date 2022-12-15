@@ -18,17 +18,17 @@ router.post(
   clientRegisterValidator(),
   validate,
   isAuthenticatedUser,
-  restrictTo('admin'),
+  restrictTo('superadmin'),
   createClient
 );
 
 // Get Client Account details
-router.get('/', isAuthenticatedUser, restrictTo('admin'), getClient);
+router.get('/', isAuthenticatedUser, restrictTo('superadmin'), getClient);
 
 // Update Client Account
-router.put('/', isAuthenticatedUser, restrictTo('admin'), updateClient);
+router.put('/:id', isAuthenticatedUser, restrictTo('superadmin'), updateClient);
 
 // Delete Client Account
-router.delete('/', isAuthenticatedUser, restrictTo('admin'), deleteClient);
+router.delete('/:id', isAuthenticatedUser, restrictTo('superadmin'), deleteClient);
 
 export const clientRoute = router;

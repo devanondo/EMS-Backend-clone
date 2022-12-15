@@ -19,9 +19,9 @@ const router = Router();
 // router.delete('/:id', isAuthenticatedUser, restrictTo('admin'), deleteHoliday);
 
 
-router.get('/', getHolidays);
-router.post('/', holidayValidateRules(), validate, createHoliday);
-router.put('/:id', updateHoliday);
-router.delete('/:id', deleteHoliday);
+router.get('/', isAuthenticatedUser, getHolidays);
+router.post('/', holidayValidateRules(), validate, isAuthenticatedUser, restrictTo('admin', 'superadmin'), createHoliday);
+router.put('/:id', isAuthenticatedUser, restrictTo('admin', 'superadmin'), updateHoliday);
+router.delete('/:id', isAuthenticatedUser, restrictTo('admin', 'superadmin'), deleteHoliday);
 
 export const HolidayRoutes = router;
