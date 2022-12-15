@@ -18,15 +18,15 @@ router.post(
   clientRegisterValidator(),
   validate,
   isAuthenticatedUser,
-  restrictTo('superadmin'),
+  restrictTo('superadmin', 'admin'),
   createClient
 );
 
 // Get Client Account details
-router.get('/', isAuthenticatedUser, restrictTo('superadmin'), getClient);
+router.get('/', isAuthenticatedUser, getClient);
 
 // Update Client Account
-router.put('/:id', isAuthenticatedUser, restrictTo('superadmin'), updateClient);
+router.put('/:id', isAuthenticatedUser, restrictTo('superadmin', 'admin'), updateClient);
 
 // Delete Client Account
 router.delete('/:id', isAuthenticatedUser, restrictTo('superadmin'), deleteClient);

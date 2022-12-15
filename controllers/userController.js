@@ -31,7 +31,7 @@ export const registerUser = catchAsync(async (req, res, next) => {
 export const updateUser = catchAsync(async (req, res, next) => {
   const { id } = req.query;
   const user = await User.findOne({ _id: id });
-
+  console.log(req.body);
   if (!user) {
     return next(new AppError('Employee not found!', 403));
   }
@@ -47,7 +47,6 @@ export const updateUser = catchAsync(async (req, res, next) => {
     message: 'User Updated successfully',
   });
 });
-
 
 //Delete User
 export const deleteUser = catchAsync(async (req, res, next) => {
@@ -158,7 +157,6 @@ export const login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email }).select('password');
 
-
   if (!user) return next(new AppError('User not found!', 403));
 
   const isPasswordMatched = await bcrypt.compare(password, user.password);
@@ -201,8 +199,6 @@ export const getAUser = catchAsync(async (req, res, next) => {
     data: users,
   });
 });
-
-
 
 //Get login user
 export const loginUser = catchAsync(async (req, res, next) => {

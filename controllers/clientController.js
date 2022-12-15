@@ -20,14 +20,13 @@ export const createClient = catchAsync(async (req, res, next) => {
   });
   res.status(200).json({
     status: 'success',
-    message: 'Client Account created successfully',
+    message: 'Client created successfully',
   });
 });
 
 // Update client account
 export const updateClient = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-
 
   const client = Client.findOne({ _id: id });
   if (!client) return next(new AppError('Account not found!', 404));
@@ -40,7 +39,7 @@ export const updateClient = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'User updated successfully',
+    message: 'Client Updated successfully',
   });
 });
 

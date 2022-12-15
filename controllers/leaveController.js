@@ -1,20 +1,20 @@
-import catchAsync from '../utils/catchAsync.js';
 import { Leave } from '../models/leaveModel.js';
 import { TotalLeaves } from '../models/totalLeaveModel.js';
 import { User } from '../models/userModel.js';
+import catchAsync from '../utils/catchAsync.js';
 
 // Create a Leave
 export const createLeave = catchAsync(async (req, res) => {
   const { leaveType, from, to, leaveReason } = req.body;
- 
+
   const diffInMs = new Date(to) - new Date(from);
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24) + 1;
 
   if (diffInDays > 0) {
     const TotalLeave = await TotalLeaves.find().lean();
-    const {_id}= TotalLeave[0]
-   const leave = await Leave.create({
-      username:req.user.username,
+    const { _id } = TotalLeave[0];
+    const leave = await Leave.create({
+      username: req.user.username,
       leaveType,
       from,
       to,
@@ -23,11 +23,14 @@ export const createLeave = catchAsync(async (req, res) => {
       totalLeaves: _id,
       user: req.user._id,
     });
-    await User.updateOne({_id:req.user._id },{
-      $push: {
-        leave: leave._id
+    await User.updateOne(
+      { _id: req.user._id },
+      {
+        $push: {
+          leave: leave._id,
+        },
       }
-    })
+    );
     res.status(201).json({
       status: 'success',
       message: 'Leave Created Successfully',
@@ -40,16 +43,18 @@ export const createLeave = catchAsync(async (req, res) => {
   }
 });
 
+// export const createNewLeave = catchAsync(async (req, res) => {
 
-// Get User leave form User Model 
+// })
+
+// Get User leave form User Model
 export const getUserLeave = catchAsync(async (req, res) => {
-  const leaves = await User.find({_id: req.user._id}).populate("leave");
+  const leaves = await User.find({ _id: req.user._id }).populate('leave');
   res.status(200).json({
     status: 'success',
     data: leaves[0].leave,
   });
 });
-
 
 // Get single/all Leave
 export const getLeaves = catchAsync(async (req, res) => {
@@ -60,11 +65,9 @@ export const getLeaves = catchAsync(async (req, res) => {
   });
 });
 
-
-
 // Get search Leave
 export const searchLeaves = catchAsync(async (req, res) => {
-  const {search} = req.body
+  const { search } = req.body;
   try {
     const leaves = await Leave.find({ $text: { $search: search } });
     res.status(200).json({
@@ -74,40 +77,36 @@ export const searchLeaves = catchAsync(async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-
 });
-
 
 // Update a Leave
 export const updateLeave = catchAsync(async (req, res) => {
-
   const leaves = await Leave.find().sort({ updatedAt: -1 });
   const { leaveType, from, to, leaveReason, leaveStatus } = req.body;
   const diffInMs = new Date(to) - new Date(from);
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24) + 1;
   const TotalLeave = await TotalLeaves.find().lean();
- 
 
   if (diffInDays > 0) {
-    const totalLeave = TotalLeave[0].totalLeaves
-    console.log(totalLeave);
+    const totalLeave = TotalLeave[0].totalLeaves;
     let countLeave;
 
-    if (leaveStatus === "Approved") {
-      countLeave = diffInDays
- 
+    if (leaveStatus === 'Approved') {
+      countLeave = diffInDays;
     }
 
     const UpdateLeave = await Leave.findByIdAndUpdate(
       req.params.id,
-      { $set: {
-        leaveType,
-        from,
-        to,
-        leaveReason,
-        numberOfDays: countLeave,
-        leaveStatus
-      } },
+      {
+        $set: {
+          leaveType,
+          from,
+          to,
+          leaveReason,
+          numberOfDays: countLeave,
+          leaveStatus,
+        },
+      },
       { new: true }
     );
     res.status(201).json({

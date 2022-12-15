@@ -1,14 +1,14 @@
-import catchAsync from '../utils/catchAsync.js';
 import { TotalLeaves } from '../models/totalLeaveModel.js';
+import catchAsync from '../utils/catchAsync.js';
 
 // Create total leave
-// export const createTotalLeave = catchAsync(async (req, res) => {
-//   await TotalLeaves.create(req.body);
-//   res.status(201).json({
-//     status: 'success',
-//     message: 'Leave Created Successfully',
-//   });
-// });
+export const createTotalLeave = catchAsync(async (req, res) => {
+  await TotalLeaves.create(req.body);
+  res.status(201).json({
+    status: 'success',
+    message: 'Leave Created Successfully',
+  });
+});
 
 // Get total leave
 export const getTotalLeave = catchAsync(async (req, res) => {
@@ -50,8 +50,6 @@ export const updateTotalLeave = catchAsync(async (req, res) => {
     });
   }
 });
-
-
 
 // Clear total leave
 

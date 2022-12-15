@@ -6,6 +6,6 @@ export const clientRegisterValidator = () => {
     body('phoneNumber').isString().notEmpty(),
     body('address').isString().notEmpty(),
     body('email').isString().notEmpty(),
-    body('phoneNumber').isString().notEmpty(),
+    body('joinDate').isString().notEmpty(),
   ];
 };
