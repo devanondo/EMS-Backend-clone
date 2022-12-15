@@ -1,18 +1,17 @@
 import { Router } from 'express';
 import {
-  getAttendances,
   createAttendance,
-  updateAttendance,
   deleteAttendance,
+  getAttendances,
+  updateAttendance,
 } from '../controllers/attendanceController.js';
-import { attendanceValidateRules } from '../middleware/validators/attendanceValidator.js';
-import { validate } from '../middleware/validators/validateResult.js';
+import { isAuthenticatedUser } from '../middleware/auth.js';
 
 const router = Router();
 
 // routes
 router.get('/', getAttendances);
-router.post('/', attendanceValidateRules(), validate, createAttendance);
+router.post('/', isAuthenticatedUser, createAttendance);
 router.put('/:id', updateAttendance);
 router.delete('/:id', deleteAttendance);
 

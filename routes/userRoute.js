@@ -31,7 +31,7 @@ router.post(
 );
 
 //Update users
-router.put('/', isAuthenticatedUser, restrictTo('admin', 'user'), updateUser);
+router.put('/', isAuthenticatedUser, restrictTo('admin', 'superadmin'), updateUser);
 
 //Update user role
 router.put('/role', isAuthenticatedUser, restrictTo('admin', 'superadmin'), updateUserRole);

@@ -55,13 +55,11 @@ const UserSchema = new Schema(
         result: {
           type: String,
         },
-        duration: {
-          start: {
-            type: String,
-          },
-          end: {
-            type: String,
-          },
+        from: {
+          type: String,
+        },
+        to: {
+          type: String,
         },
 
         outof: {
@@ -77,6 +75,15 @@ const UserSchema = new Schema(
 
     //Leave
     leave: [
+      {
+        id: {
+          type: mongoose.Schema.ObjectId,
+          ref: 'Leave',
+        },
+      },
+    ],
+
+    project: [
       {
         id: {
           type: mongoose.Schema.ObjectId,

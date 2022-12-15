@@ -8,6 +8,7 @@ import { leaveRoutes } from './leaveRoutes.js';
 import { projectRoutes } from './projectRoutes.js';
 
 import { extraRoute } from './extraRoute.js';
+import { taskRoute } from './taskRoute.js';
 import { userRoute } from './userRoute.js';
 
 const router = Router();
@@ -18,6 +19,7 @@ router.use('/leave', leaveRoutes);
 router.use('/holiday', HolidayRoutes);
 router.use('/attendance', AttendanceRoutes);
 router.use('/admin', extraRoute);
+router.use('/task', taskRoute);
 
 //User route
 router.use('/user', userRoute);

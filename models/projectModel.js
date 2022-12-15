@@ -26,6 +26,15 @@ const ProjectSchema = new Schema(
       required: [true, 'End Date is required'],
     },
 
+    openTask: {
+      type: Number,
+      default: 0,
+    },
+    completedTask: {
+      type: Number,
+      default: 0,
+    },
+
     rate: {
       type: String,
       default: '',
@@ -50,6 +59,11 @@ const ProjectSchema = new Schema(
       required: [true, 'Team Member is required'],
     },
 
+    completed: {
+      type: Number,
+      default: 0,
+    },
+
     address: {
       type: String,
       default: '',
@@ -59,7 +73,6 @@ const ProjectSchema = new Schema(
     file: {
       type: String,
       default: '',
-      required: [false, 'file is required'],
     },
   },
   { timestamps: true }
