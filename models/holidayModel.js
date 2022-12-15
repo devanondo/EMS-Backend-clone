@@ -20,6 +20,12 @@ const HolidaySchema = new Schema(
           required: [true, 'Holiday End Date is required'],
         },
 
+        totalHoliday:{
+          type: Number,
+          default: 0,
+          required: [true, 'Holiday End Date is required'],
+        }
+
     },
     { timestamps: true }
   );

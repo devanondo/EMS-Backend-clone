@@ -47,6 +47,12 @@ const ProjectSchema = new Schema(
       required: [true, 'Priority is required'],
     },
 
+    completed: {
+      type: Number,
+      default: 0,
+      required: [true, 'Completed is required'],
+    },
+
     projectLeader: {
       type: String,
       default: '',
@@ -68,6 +74,12 @@ const ProjectSchema = new Schema(
       type: String,
       default: '',
       required: [true, 'Address is required'],
+    },
+
+    description: {
+      type: String,
+      default: '',
+      required: [true, 'description is required'],
     },
 
     file: {
