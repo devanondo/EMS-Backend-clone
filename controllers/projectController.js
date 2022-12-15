@@ -1,9 +1,18 @@
-import catchAsync from '../utils/catchAsync.js';
 import { Project } from '../models/projectModel.js';
+import { User } from '../models/userModel.js';
+import catchAsync from '../utils/catchAsync.js';
 
 // Create a project
 export const createProject = catchAsync(async (req, res) => {
-  await Project.create(req.body);
+  const project = await Project.create(req.body);
+
+  project.teamMember.reduce(async (acc, curr) => {
+    const users = await User.findById(curr._id);
+
+    users.project.push(project._id);
+    await users.save({ validateBeforeSave: false });
+    return acc;
+  }, []);
 
   res.status(201).json({
     status: 'success',
@@ -28,18 +37,30 @@ export const getProjects = catchAsync(async (req, res) => {
 
 // Update a project
 export const updateProject = catchAsync(async (req, res) => {
-
   const UpdateProject = await Project.findByIdAndUpdate(
     req.params.id,
-    {$set: req.body},
-    {new: true}
+    { $set: req.body },
+    { new: true }
   );
-
 
   res.status(201).json({
     status: 'success',
     message: 'Project Update Successfully',
-    data: UpdateProject,
+  });
+});
+
+// Update a project
+export const progressUpdate = catchAsync(async (req, res) => {
+  console.log(req.params.id);
+  await Project.findByIdAndUpdate(
+    req.params.id,
+    { completed: req.body.completed },
+    { new: true, runValidators: true, useFindAndModify: false }
+  );
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Project Update Successfully',
   });
 });
 
