@@ -38,6 +38,7 @@ const UserSchema = new Schema(
       type: String,
       unique: true,
     },
+    
     address: [
       {
         address1: {
