@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   createProject,
   deleteProject,
+  getProjectByEmployee,
   getProjects,
   progressUpdate,
   updateProject,
@@ -14,12 +15,23 @@ import { validate } from '../middleware/validators/validateResult.js';
 const router = Router();
 
 // routes
+//Get Projects
+router.get('/', isAuthenticatedUser, getProjects);
 
-router.get('/', getProjects);
-router.post( '/', projectValidateRules(),validate,createProject );
-router.put('/:id', updateProject);
-router.patch('/:id', progressUpdate);
+//Get project by user
+router.get('/user', isAuthenticatedUser, getProjectByEmployee);
 
+//Create Project
+router.post('/', projectValidateRules(), validate, createProject);
+
+//Update Project
+router.put('/:id', isAuthenticatedUser, restrictTo('admin', 'superadmin', 'pm'), updateProject);
+
+//Update Progress
+router.patch('/:id', isAuthenticatedUser, progressUpdate);
+
+//Delete Project
+router.delete('/:id', isAuthenticatedUser, restrictTo('admin', 'superadmin', 'pm'), deleteProject);
 // router.get('/', isAuthenticatedUser, restrictTo('admin, user'), getProjects);
 // router.post(
 //   '/',
@@ -31,9 +43,5 @@ router.patch('/:id', progressUpdate);
 // );
 // router.put('/:id', isAuthenticatedUser, restrictTo('admin'), updateProject);
 // router.delete('/:id', isAuthenticatedUser, restrictTo('admin'), deleteProject);
-
-
-
-router.delete('/:id', deleteProject);
 
 export const projectRoutes = router;

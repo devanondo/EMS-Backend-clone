@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { User } from '../models/userModel.js';
+import { ApiFeatures } from '../utils/ApiFeatures.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import { saveToken } from '../utils/saveToken.js';
@@ -31,7 +32,6 @@ export const registerUser = catchAsync(async (req, res, next) => {
 export const updateUser = catchAsync(async (req, res, next) => {
   const { id } = req.query;
   const user = await User.findOne({ _id: id });
-  console.log(req.body);
   if (!user) {
     return next(new AppError('Employee not found!', 403));
   }
@@ -188,8 +188,13 @@ export const getAUser = catchAsync(async (req, res, next) => {
     filters._id = id;
   }
 
-  const users = await User.find(filters).lean().sort({ updatedAt: -1 });
+  const totalEmployee = await User.countDocuments();
 
+  const apiFeatures = new ApiFeatures(User.find(filters).lean().sort({ updatedAt: -1 }), req.query)
+    .searchEmployee()
+    .pagination();
+
+  const users = await apiFeatures.query;
   if (!users) {
     return next(new AppError('User not found!', 403));
   }
@@ -197,6 +202,7 @@ export const getAUser = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     data: users,
+    count: totalEmployee,
   });
 });
 

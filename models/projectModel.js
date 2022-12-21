@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 
 const ProjectSchema = new Schema(
   {
@@ -9,9 +9,8 @@ const ProjectSchema = new Schema(
     },
 
     client: {
-      type: String,
-      default: '',
-      required: [true, 'Client is required'],
+      type: mongoose.Schema.ObjectId,
+      ref: 'Client',
     },
 
     startDate: {

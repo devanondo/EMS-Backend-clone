@@ -1,5 +1,6 @@
 import { Project } from '../models/projectModel.js';
 import { Task } from '../models/taskModel.js';
+import { ApiFeatures } from '../utils/ApiFeatures.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
@@ -58,17 +59,33 @@ export const getTask = catchAsync(async (req, res, next) => {
   if (id) {
     filters._id = id;
   }
+  const totalCount = await Task.countDocuments();
 
-  const tasks = await Task.find(filters)
-    .lean()
-    .sort({ updatedAt: -1 })
-    .populate('assignTo', ['username', 'designation'])
-    .populate('assignFrom', ['username', 'designation'])
-    .populate('project', ['projectName', 'teamMember']);
+  const apiFeatures = new ApiFeatures(
+    Task.find(filters)
+      .lean()
+      .sort({ updatedAt: -1 })
+      .populate('assignTo', ['username', 'designation'])
+      .populate('assignFrom', ['username', 'designation'])
+      .populate('project', ['projectName', 'teamMember']),
+    req.query
+  )
+    .searchTitle()
+    .pagination();
+
+  const tasks = await apiFeatures.query;
+
+  // const tasks = await Task.find(filters)
+  //   .lean()
+  //   .sort({ updatedAt: -1 })
+  //   .populate('assignTo', ['username', 'designation'])
+  //   .populate('assignFrom', ['username', 'designation'])
+  //   .populate('project', ['projectName', 'teamMember']);
 
   res.status(200).json({
     status: 'success',
     data: tasks,
+    count: totalCount,
   });
 });
 
@@ -111,11 +128,17 @@ export const changeTaskStatus = catchAsync(async (req, res, next) => {
 export const getUserTask = catchAsync(async (req, res, next) => {
   const { id } = req.query;
 
-  const tasks = await Task.find({ assignTo: id }).lean().sort({ updatedAt: -1 });
+  const tasks = await Task.find({ assignTo: id })
+    .lean()
+    .sort({ updatedAt: -1 })
+    .populate('assignTo', ['username', 'designation'])
+    .populate('assignFrom', ['username', 'designation'])
+    .populate('project', ['projectName', 'teamMember']);
 
   res.status(200).json({
     status: 'success',
     data: tasks,
+    count: tasks.length,
   });
 });
 

@@ -34,6 +34,10 @@ const UserSchema = new Schema(
     department: {
       type: String,
     },
+    idno: {
+      type: String,
+      unique: true,
+    },
     address: [
       {
         address1: {
@@ -76,11 +80,10 @@ const UserSchema = new Schema(
     // Leave
     leave: [
       {
-          type: mongoose.Schema.ObjectId,
-          ref: 'Leave',
+        type: mongoose.Schema.ObjectId,
+        ref: 'Leave',
       },
     ],
-
 
     project: [
       {
@@ -154,7 +157,5 @@ UserSchema.methods.getJWTToken = function () {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
-
-
 
 export const User = model('User', UserSchema);
