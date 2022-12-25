@@ -30,14 +30,11 @@ router.post(
   registerUser
 );
 
-
 // Get  user
 router.get('/', isAuthenticatedUser, getAUser);
 
-
 //Update users
 router.put('/', isAuthenticatedUser, restrictTo('admin', 'superadmin'), updateUser);
-
 
 // Update user role
 router.put('/role', isAuthenticatedUser, restrictTo('admin', 'superadmin'), updateUserRole);
@@ -56,7 +53,6 @@ router.get('/', getAUser);
 
 // Get logged in user
 router.get('/self', isAuthenticatedUser, loginUser);
-
 
 // Login user
 router.post('/login', login);

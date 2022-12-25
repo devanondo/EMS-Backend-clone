@@ -40,8 +40,6 @@ export const getProjects = catchAsync(async (req, res) => {
   //   req.query
   // ).pagination();
 
-  console.log(req.query);
-
   const apiFeatures = new ApiFeatures(
     Project.find(filters).lean().sort({ updatedAt: -1 }).populate('client'),
     req.query

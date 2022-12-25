@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export class ApiFeatures {
   constructor(query, queryStr) {
     (this.query = query), (this.queryStr = queryStr);
@@ -19,18 +21,6 @@ export class ApiFeatures {
     return this;
   }
 
-  employeesearch() {
-    const keyword = this.queryStr.keyword
-      ? {
-          username: {
-            $regex: this.queryStr.keyword,
-            $options: 'i',
-          },
-        }
-      : {};
-    this.query = this.query.find({ ...keyword });
-    return this;
-  }
   searchTitle() {
     const keyword = this.queryStr.keyword
       ? {
@@ -40,31 +30,16 @@ export class ApiFeatures {
     this.query = this.query.find({ ...keyword });
     return this;
   }
-
-  //Role search
-  searchByRole() {
-    const roles = this.queryStr.role
+  searchByDate() {
+    const keyword = this.queryStr.from
       ? {
-          role: {
-            $regex: this.queryStr.role,
-            $options: 'i',
+          createdAt: {
+            $gte: moment(this.queryStr.from, 'DD-MM-YYYY').format('MM-DD-YYYY'),
+            $lte: moment(this.queryStr.to, 'DD-MM-YYYY').format('MM-DD-YYYY'),
           },
         }
       : {};
-    this.query = this.query.find({ ...roles });
-    return this;
-  }
-  //Role search
-  searchByDesignation() {
-    const designation = this.queryStr.designation
-      ? {
-          designation: {
-            $regex: this.queryStr.designation,
-            $options: 'i',
-          },
-        }
-      : {};
-    this.query = this.query.find({ ...designation });
+    this.query = this.query.find({ ...keyword });
     return this;
   }
 

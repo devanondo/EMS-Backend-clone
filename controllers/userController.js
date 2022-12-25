@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import moment from 'moment';
 import { User } from '../models/userModel.js';
 import { ApiFeatures } from '../utils/ApiFeatures.js';
 import AppError from '../utils/appError.js';
@@ -9,6 +10,17 @@ import { saveToken } from '../utils/saveToken.js';
 export const registerUser = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   const isExistUser = await User.findOne({ email });
+  const data = [
+    {
+      year: moment().year(),
+      leaves: {
+        cl: 0,
+        el: 0,
+        sl: 0,
+      },
+    },
+  ];
+  req.body.leave = data;
 
   if (isExistUser) {
     return next(new AppError('Email already exists!', 403));
@@ -17,10 +29,7 @@ export const registerUser = catchAsync(async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   req.body.password = hashedPassword;
-
   const user = await User.create(req.body);
-
-  console.log(user);
 
   res.status(200).json({
     status: 'success',
@@ -93,7 +102,7 @@ export const addEducation = catchAsync(async (req, res, next) => {
   const { id } = req.query;
 
   const user = await User.findById(id);
-  if (!user) return next(AppError('User not found!', 404));
+  if (!user) return next(new AppError('User not found!', 404));
 
   user.education.push(req.body);
   await user.save({ validateBeforeSave: false });

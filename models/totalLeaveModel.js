@@ -2,13 +2,17 @@ import { model, Schema } from 'mongoose';
 
 const TotalLeave = new Schema(
   {
-    totalLeaves: {
+    leaveType: [
+      {
+        title: String,
+        days: Number,
+        description: String,
+      },
+    ],
+    total: {
       type: Number,
-      default: 24,
-      required: [true, 'From Date is required'],
+      default: 0,
     },
-    leaveType: [],
-
   },
   { timestamps: true }
 );

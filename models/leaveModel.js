@@ -7,11 +7,7 @@ const LeaveSchema = new Schema(
       ref: 'User',
     },
 
-    username: {
-      type: String,
-    },
-
-    leaveType: {
+    type: {
       type: String,
       default: '',
       required: [true, 'Leave Type is required'],
@@ -29,29 +25,13 @@ const LeaveSchema = new Schema(
       required: [true, 'To Date is required'],
     },
 
-    numberOfDays: {
-      type: Number,
-      default: 0,
-      required: [true, 'Number Of Days Date is required'],
-    },
-
-    appliedForLeaves: {
-      type: Number,
-      required: [false, 'Remaining Leaves is required'],
-    },
-
-    totalLeaves: {
-      type: mongoose.Types.ObjectId,
-      ref: 'TotalLeaves',
-    },
-
-    leaveReason: {
+    reason: {
       type: String,
       default: '',
-      required: [true, 'Leave Reason is required'],
+      required: [true, 'Reason is required'],
     },
 
-    leaveStatus: {
+    status: {
       type: String,
       default: 'Pending',
       required: [true, 'Leave Status is required'],
@@ -60,6 +40,6 @@ const LeaveSchema = new Schema(
   { timestamps: true }
 );
 
-LeaveSchema.index({ username: "text" });
+//LeaveSchema.index({ username: "text" });
 
 export const Leave = model('Leave', LeaveSchema);

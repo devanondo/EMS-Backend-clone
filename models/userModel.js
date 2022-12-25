@@ -20,12 +20,14 @@ const UserSchema = new Schema(
       type: String,
     },
     phone: {
-      type: String,
+      type: Number,
       unique: true,
+      default: null,
     },
     secondaryPhone: {
-      type: String,
+      type: Number,
       unique: true,
+      default: null,
     },
     designation: {
       type: String,
@@ -36,9 +38,8 @@ const UserSchema = new Schema(
     },
     idno: {
       type: String,
-      unique: true,
     },
-    
+
     address: [
       {
         address1: {
@@ -79,12 +80,7 @@ const UserSchema = new Schema(
     },
 
     // Leave
-    leave: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Leave',
-      },
-    ],
+    leave: [],
 
     project: [
       {
@@ -151,7 +147,6 @@ const UserSchema = new Schema(
   },
   { timestamps: true }
 );
-UserSchema.index({ username: 'text' });
 // JWT TOKEN
 UserSchema.methods.getJWTToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
