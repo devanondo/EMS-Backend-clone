@@ -34,8 +34,8 @@ export class ApiFeatures {
     const keyword = this.queryStr.from
       ? {
           createdAt: {
-            $gte: moment(this.queryStr.from, 'DD-MM-YYYY').format('MM-DD-YYYY'),
-            $lte: moment(this.queryStr.to, 'DD-MM-YYYY').format('MM-DD-YYYY'),
+            $gte: moment(this.queryStr.from, 'MM-DD-YYYY').format('MM-DD-YYYY'),
+            $lte: moment(this.queryStr.to, 'MM-DD-YYYY').format('MM-DD-YYYY'),
           },
         }
       : {};

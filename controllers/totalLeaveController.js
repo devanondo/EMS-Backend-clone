@@ -68,9 +68,9 @@ export const updateTotalLeave = catchAsync(async (req, res, next) => {
   const leaves = await TotalLeaves.find();
 
   leaves[0].leaveType.reduce((acc, cur) => {
-    if (cur._id.toString() == req.query.id.toString()) {
+    if (cur._id.toString() == req.body._id.toString()) {
       leaves[0].total -= cur.days;
-      cur.days = req.query.days;
+      cur.days = req.body.days;
       leaves[0].total += cur.days;
     }
     return acc;

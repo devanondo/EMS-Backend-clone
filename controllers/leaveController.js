@@ -6,46 +6,6 @@ import { ApiFeatures } from '../utils/ApiFeatures.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
-// Create a Leave
-// export const createLeave = catchAsync(async (req, res) => {
-//   const { leaveType, from, to, leaveReason } = req.body;
-
-//   const diffInMs = new Date(to) - new Date(from);
-//   const diffInDays = diffInMs / (1000 * 60 * 60 * 24) + 1;
-
-//   if (diffInDays > 0) {
-//     const TotalLeave = await TotalLeaves.find().lean();
-//     const { _id } = TotalLeave[0];
-//     const leave = await Leave.create({
-//       username: req.user.username,
-//       leaveType,
-//       from,
-//       to,
-//       leaveReason,
-//       appliedForLeaves: diffInDays,
-//       totalLeaves: _id,
-//       user: req.user._id,
-//     });
-//     await User.updateOne(
-//       { _id: req.user._id },
-//       {
-//         $push: {
-//           leave: leave._id,
-//         },
-//       }
-//     );
-//     res.status(201).json({
-//       status: 'success',
-//       message: 'Leave Created Successfully',
-//     });
-//   } else {
-//     res.status(404).json({
-//       status: 'failed',
-//       message: 'Please change your date',
-//     });
-//   }
-// });
-
 //Create leave edited
 export const createLeave = catchAsync(async (req, res, next) => {
   req.body.id = req.user._id;
@@ -149,14 +109,10 @@ export const getAllLeaves = catchAsync(async (req, res, next) => {
     filters._id = id;
   }
 
-  // console.log(moment(from, 'DD-MM-YYYY').format('MM-DD-YYYY'));
-  const dataLength = new ApiFeatures(
-    Leave.find(filters).lean().sort({ updatedAt: -1 }).populate('user', ['username']),
-    req.query
-  ).searchByDate();
+  const document = await Leave.countDocuments();
 
   const apiFeatures = new ApiFeatures(
-    Leave.find(filters).lean().sort({ updatedAt: -1 }).populate('user', ['username']),
+    Leave.find(filters).lean().sort({ updatedAt: -1 }).populate('user', ['username', 'leave']),
     req.query
   )
     .searchByDate()
@@ -166,7 +122,7 @@ export const getAllLeaves = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    count: dataLength.length,
+    count: document,
     data: leaves,
   });
 });
