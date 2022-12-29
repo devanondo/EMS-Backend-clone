@@ -61,6 +61,6 @@ router.post('/login', login);
 router.post('/logout', logout);
 
 // Change user role --admin
-router.patch('/role', isAuthenticatedUser, restrictTo('admin'), changeUserRole);
+router.patch('/role', isAuthenticatedUser, restrictTo('superadmin', 'admin'), changeUserRole);
 
 export const userRoute = router;

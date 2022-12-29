@@ -1,14 +1,12 @@
-import catchAsync from '../utils/catchAsync.js';
 import { Holiday } from '../models/HolidayModel.js';
 import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
 
 // Create a Holiday
 export const createHoliday = catchAsync(async (req, res) => {
   const { holidayName, totalHoliday, holidayStart, holidayEnd } = req.body;
   const diffInMs = new Date(holidayEnd) - new Date(holidayStart);
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-  console.log(diffInDays);
 
   if (diffInDays > 0) {
     await Holiday.create({ holidayName, holidayStart, holidayEnd, totalHoliday: diffInDays });
@@ -55,8 +53,6 @@ export const updateHoliday = catchAsync(async (req, res) => {
 
   const diffInMs = new Date(holidayEnd) - new Date(holidayStart);
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-  console.log(diffInDays);
 
   if (diffInDays > 0) {
     const UpdateHoliday = await Holiday.findByIdAndUpdate(

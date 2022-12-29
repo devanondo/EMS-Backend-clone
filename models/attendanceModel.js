@@ -2,27 +2,15 @@ import mongoose, { model, Schema } from 'mongoose';
 
 const AttendanceSchema = new Schema(
   {
-    year: String,
-    value: [
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+    },
+
+    attendance: [
       {
-        month: String,
-        value: [
-          {
-            day: String,
-            punchIn: [
-              {
-                time: String,
-                employeeId: mongoose.Schema.ObjectId,
-              },
-            ],
-            punchOut: [
-              {
-                time: String,
-                employeeId: mongoose.Schema.ObjectId,
-              },
-            ],
-          },
-        ],
+        status: String,
+        time: Date,
       },
     ],
   },

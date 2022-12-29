@@ -38,7 +38,6 @@ export const createLeave = catchAsync(async (req, res, next) => {
 
         if (alreadyTakenLeave + diff <= item.days) {
           isCreate = true;
-          console.log(alreadyTakenLeave + diff);
         } else {
           return next(new AppError('Please select valid date', 404));
         }
@@ -146,84 +145,5 @@ export const getUserLeave = catchAsync(async (req, res) => {
     status: 'success',
     data: leaves,
     count,
-  });
-});
-
-// export const createNewLeave = catchAsync(async (req, res) => {
-
-// })
-
-// Get single/all Leave
-export const getLeaves = catchAsync(async (req, res) => {
-  const leaves = await Leave.find().sort({ updatedAt: -1 });
-  res.status(200).json({
-    status: 'success',
-    data: leaves,
-  });
-});
-
-// Get search Leave
-export const searchLeaves = catchAsync(async (req, res) => {
-  const { search } = req.body;
-  try {
-    const leaves = await Leave.find({ $text: { $search: search } });
-    res.status(200).json({
-      status: 'success',
-      data: leaves,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-// Update a Leave
-export const updateLeave = catchAsync(async (req, res) => {
-  const leaves = await Leave.find().sort({ updatedAt: -1 });
-  const { leaveType, from, to, leaveReason, leaveStatus } = req.body;
-  const diffInMs = new Date(to) - new Date(from);
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24) + 1;
-  const TotalLeave = await TotalLeaves.find().lean();
-
-  if (diffInDays > 0) {
-    const totalLeave = TotalLeave[0].totalLeaves;
-    let countLeave;
-
-    if (leaveStatus === 'Approved') {
-      countLeave = diffInDays;
-    }
-
-    const UpdateLeave = await Leave.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: {
-          leaveType,
-          from,
-          to,
-          leaveReason,
-          numberOfDays: countLeave,
-          leaveStatus,
-        },
-      },
-      { new: true }
-    );
-    res.status(201).json({
-      status: 'success',
-      message: 'Leave Update Successfully',
-      data: UpdateLeave,
-    });
-  } else {
-    res.status(404).json({
-      status: 'failed',
-      message: 'Please change your date',
-    });
-  }
-});
-
-// Delete all Leave
-export const deleteLeave = catchAsync(async (req, res) => {
-  await Leave.findByIdAndDelete(req.params.id);
-  res.status(201).json({
-    status: 'success',
-    message: 'Leave Delete Successfully',
   });
 });

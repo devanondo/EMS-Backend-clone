@@ -22,7 +22,13 @@ router.get('/', isAuthenticatedUser, getProjects);
 router.get('/user', isAuthenticatedUser, getProjectByEmployee);
 
 //Create Project
-router.post('/', projectValidateRules(), validate, createProject);
+router.post(
+  '/',
+  restrictTo('admin', 'superadmin', 'pm'),
+  projectValidateRules(),
+  validate,
+  createProject
+);
 
 //Update Project
 router.put('/:id', isAuthenticatedUser, restrictTo('admin', 'superadmin', 'pm'), updateProject);
@@ -32,16 +38,5 @@ router.patch('/:id', isAuthenticatedUser, progressUpdate);
 
 //Delete Project
 router.delete('/:id', isAuthenticatedUser, restrictTo('admin', 'superadmin', 'pm'), deleteProject);
-// router.get('/', isAuthenticatedUser, restrictTo('admin, user'), getProjects);
-// router.post(
-//   '/',
-//   isAuthenticatedUser,
-//   restrictTo('admin'),
-//   projectValidateRules(),
-//   validate
-//   createProject,
-// );
-// router.put('/:id', isAuthenticatedUser, restrictTo('admin'), updateProject);
-// router.delete('/:id', isAuthenticatedUser, restrictTo('admin'), deleteProject);
 
 export const projectRoutes = router;

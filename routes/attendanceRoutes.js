@@ -1,20 +1,21 @@
 import { Router } from 'express';
 import {
   createAttendance,
-  deleteAttendance,
-  getAttendances,
-  updateAttendance,
+  getAllAttendance,
+  getUserAttendance,
 } from '../controllers/attendanceController.js';
 import { isAuthenticatedUser } from '../middleware/auth.js';
+import { restrictTo } from '../middleware/restrictTo.js';
 
 const router = Router();
 
 // routes
-router.get('/', getAttendances);
+router.get('/', isAuthenticatedUser, restrictTo('superadmin', 'admin'), getAllAttendance);
+
+//Get user routes
+router.get('/user', isAuthenticatedUser, getUserAttendance);
+
+//Create attendance
 router.post('/', isAuthenticatedUser, createAttendance);
-router.put('/:id', updateAttendance);
-router.delete('/:id', deleteAttendance);
-
-
 
 export const AttendanceRoutes = router;

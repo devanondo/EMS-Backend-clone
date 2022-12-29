@@ -98,7 +98,6 @@ export const updateProject = catchAsync(async (req, res) => {
 
 // Update a project
 export const progressUpdate = catchAsync(async (req, res) => {
-  console.log(req.params.id);
   await Project.findByIdAndUpdate(
     req.params.id,
     { completed: req.body.completed },

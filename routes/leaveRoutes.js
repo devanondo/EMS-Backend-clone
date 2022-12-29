@@ -20,10 +20,10 @@ const router = Router();
 router.post('/create', isAuthenticatedUser, createLeave);
 
 //Update status
-router.post('/update', isAuthenticatedUser, restrictTo('superadmin'), updateStatus);
+router.post('/update', isAuthenticatedUser, restrictTo('superadmin', 'admin'), updateStatus);
 
 //get all leaves
-router.get('/', isAuthenticatedUser, getAllLeaves);
+router.get('/', isAuthenticatedUser, restrictTo('superadmin', 'admin'), getAllLeaves);
 
 //Get user leaves
 router.get('/user-leave', isAuthenticatedUser, getUserLeave);
