@@ -1,36 +1,18 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 
 const AttendanceSchema = new Schema(
   {
-    punchIn: {
-      type: Date,
-      default: Date.now(),
-      required: [true, 'Punch In Time is required'],
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
     },
 
-    punchOut: {
-      type: Date,
-      default: Date.now(),
-      required: [true, 'Punch Out Time is required'],
-    },
-
-    production: {
-      type: Number,
-      default: 8,
-      required: [true, 'Production time is required'],
-    },
-
-    break: {
-      type: String,
-      default: '30 Min',
-      required: [true, 'Break time is required'],
-    },
-
-    overtime: {
-      type: Number,
-      default: 0,
-      required: [true, 'Overtime is required'],
-    },
+    attendance: [
+      {
+        status: String,
+        time: Date,
+      },
+    ],
   },
   { timestamps: true }
 );

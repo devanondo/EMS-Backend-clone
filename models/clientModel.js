@@ -5,30 +5,33 @@ const ClientSchema = new Schema({
     type: String,
     required: [true, 'Client name is required!'],
   },
-  designation: {
+  phoneNumber: {
     type: String,
     required: [true, 'Client designation is required!'],
   },
-  companyName: {
+  email: {
     type: String,
     required: [true, 'Company name is required!'],
   },
 
-  phone: {
+  address: {
     type: String,
     required: [true, 'Client phone is required!'],
   },
-  email: {
+  country: {
     type: String,
     required: [true, 'Client email is required!'],
   },
-  address: {
+
+  joinDate: {
     type: String,
   },
+
   createdBy: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
   },
+  
   projects: [
     {
       projectId: {

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 
 const ProjectSchema = new Schema(
   {
@@ -9,9 +9,8 @@ const ProjectSchema = new Schema(
     },
 
     client: {
-      type: String,
-      default: '',
-      required: [true, 'Client is required'],
+      type: mongoose.Schema.ObjectId,
+      ref: 'Client',
     },
 
     startDate: {
@@ -24,6 +23,15 @@ const ProjectSchema = new Schema(
       type: String,
       default: '',
       required: [true, 'End Date is required'],
+    },
+
+    openTask: {
+      type: Number,
+      default: 0,
+    },
+    completedTask: {
+      type: Number,
+      default: 0,
     },
 
     rate: {
@@ -56,6 +64,11 @@ const ProjectSchema = new Schema(
       required: [true, 'Team Member is required'],
     },
 
+    completed: {
+      type: Number,
+      default: 0,
+    },
+
     address: {
       type: String,
       default: '',
@@ -71,7 +84,6 @@ const ProjectSchema = new Schema(
     file: {
       type: String,
       default: '',
-      required: [false, 'file is required'],
     },
   },
   { timestamps: true }

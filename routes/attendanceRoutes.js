@@ -1,19 +1,21 @@
 import { Router } from 'express';
 import {
-  getAttendances,
   createAttendance,
-  updateAttendance,
-  deleteAttendance,
+  getAllAttendance,
+  getUserAttendance,
 } from '../controllers/attendanceController.js';
-import { attendanceValidateRules } from '../middleware/validators/attendanceValidator.js';
-import { validate } from '../middleware/validators/validateResult.js';
+import { isAuthenticatedUser } from '../middleware/auth.js';
+import { restrictTo } from '../middleware/restrictTo.js';
 
 const router = Router();
 
 // routes
-router.get('/', getAttendances);
-router.post('/', attendanceValidateRules(), validate, createAttendance);
-router.put('/:id', updateAttendance);
-router.delete('/:id', deleteAttendance);
+router.get('/', isAuthenticatedUser, restrictTo('superadmin', 'admin'), getAllAttendance);
+
+//Get user routes
+router.get('/user', isAuthenticatedUser, getUserAttendance);
+
+//Create attendance
+router.post('/', isAuthenticatedUser, createAttendance);
 
 export const AttendanceRoutes = router;

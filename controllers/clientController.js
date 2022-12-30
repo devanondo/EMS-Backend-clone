@@ -2,30 +2,31 @@ import { Client } from '../models/clientModel.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
-//Create Client Account
+// Create Client Account
 export const createClient = catchAsync(async (req, res, next) => {
-  const { name, email, phone, designation, companyName } = req.body;
+  const { name, phoneNumber, email, joinDate, address, country } = req.body;
 
-  const user = await Client.findOne({ email: email });
+  const user = await Client.findOne({ email });
   if (user) return next(new AppError('Client already exists..!', 403));
 
   await Client.create({
     name,
+    phoneNumber,
+    address,
+    joinDate,
     email,
-    designation,
-    companyName,
-    phone,
+    country,
     createdBy: req.user._id,
   });
   res.status(200).json({
     status: 'success',
-    message: 'Client Account created successfully',
+    message: 'Client created successfully',
   });
 });
 
-//Update client account
+// Update client account
 export const updateClient = catchAsync(async (req, res, next) => {
-  const { id } = req.query;
+  const { id } = req.params;
 
   const client = Client.findOne({ _id: id });
   if (!client) return next(new AppError('Account not found!', 404));
@@ -38,14 +39,14 @@ export const updateClient = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'User updated successfully',
+    message: 'Client Updated successfully',
   });
 });
 
-//Get all Client
+// Get all Client
 export const getClient = catchAsync(async (req, res, next) => {
   const { id } = req.query;
-  let filters = {};
+  const filters = {};
 
   if (id) filters._id = id;
 
@@ -57,16 +58,11 @@ export const getClient = catchAsync(async (req, res, next) => {
   });
 });
 
-//Delete client Account
+// Delete client Account
 export const deleteClient = catchAsync(async (req, res, next) => {
-  const { id } = req.query;
-
-  const client = await Client.findById(id);
-
-  if (!client) return next(new AppError('Account not found', 404));
-
-  const isDeleted = await Client.findByIdAndRemove(id);
-  if (!isDeleted) return next(new AppError('Internal Server error', 404));
-
-  res.status(200).json({ status: 'success', message: 'Client deleted successfully' });
+  await Client.findByIdAndDelete(req.params.id);
+  res.status(201).json({
+    status: 'success',
+    message: 'Client Delete Successfully',
+  });
 });

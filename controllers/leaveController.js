@@ -1,96 +1,149 @@
-import catchAsync from '../utils/catchAsync.js';
+import moment from 'moment';
 import { Leave } from '../models/leaveModel.js';
+import { TotalLeaves } from '../models/totalLeaveModel.js';
+import { User } from '../models/userModel.js';
+import { ApiFeatures } from '../utils/ApiFeatures.js';
+import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
 
-// Create a Leave
-export const createLeave = catchAsync(async (req, res) => {
-  const { leaveType, from, to, leaveReason } = req.body;
+//Create leave edited
+export const createLeave = catchAsync(async (req, res, next) => {
+  req.body.id = req.user._id;
+  const { type, id, from, to, reason } = req.body;
 
-  const diffInMs = new Date(to) - new Date(from);
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  const fromDate = moment(from, 'MM-DD-YYYY');
+  const toDate = moment(to, 'MM-DD-YYYY');
 
-  if (diffInDays > 0) {
-    const totalLeave = 20;
-    const remainingLeaves = totalLeave - diffInDays;
+  if (fromDate.year() !== toDate.year()) {
+    return next(new AppError('Please select same year!'));
+  }
 
-    await Leave.create({
-      leaveType,
-      from,
-      to,
-      leaveReason,
-      numberOfDays: diffInDays,
-      remainingLeaves,
+  let diff = toDate.diff(fromDate, 'days') + 1;
+
+  // let months = toDate.diff(fromDate, 'months');
+  // fromDate.add(months, 'months');
+  // let days12 = toDate.diff(fromDate, 'days');
+  //months + ' ' + 'Month(s)'+ ' ' + days + " Day(s)"
+
+  const user = await User.findById(id);
+  if (!user) {
+    return next(new AppError('User not found!', 404));
+  }
+  let isCreate = false;
+  const totalLeave = await TotalLeaves.find();
+  user.leave.map((emLeave) => {
+    totalLeave[0].leaveType.map((item) => {
+      if (item.title === type) {
+        let alreadyTakenLeave = emLeave.leaves[`${type}`];
+
+        if (alreadyTakenLeave + diff <= item.days) {
+          isCreate = true;
+        } else {
+          return next(new AppError('Please select valid date', 404));
+        }
+      }
     });
-    res.status(201).json({
+  });
+
+  if (isCreate) {
+    const newLeave = await Leave.create({ user: id, type, from, to, reason });
+
+    res.status(200).json({
       status: 'success',
-      message: 'Leave Created Successfully',
+      message: 'Request successful',
     });
   } else {
-    res.status(404).json({
-      status: 'failed',
-      message: 'Please change your date',
-    });
+    next(new AppError('Please select the valid date!'));
   }
 });
 
-// Get single/all Leave
-export const getLeaves = catchAsync(async (req, res) => {
-  const { did } = req.query;
-  const filters = {};
+//Approved by admin
+export const updateStatus = catchAsync(async (req, res, next) => {
+  const { id } = req.query;
 
-  if (did) {
-    filters._id = did;
+  const leave = await Leave.findById(id);
+  if (!leave) return next(new AppError('Leave not found!', 404));
+
+  if (leave.status === req.query.status) {
+    return next(new AppError('Already in this status!', 404));
   }
-  const Projects = await Leave.find(filters).lean().sort({ updatedAt: -1 });
+
+  if (req.query.status === 'approved') {
+    const user = await User.findById(leave.user);
+    if (!user) return next(new AppError('User not found!', 404));
+
+    //If approved from admin
+    //Get date count
+    const fromDate = moment(leave.from, 'MM-DD-YYYY');
+    const toDate = moment(leave.to, 'MM-DD-YYYY');
+    let days = toDate.diff(fromDate, 'days') + 1;
+
+    const isValidLeaveDate = user.leave.reduce((acc, cur) => {
+      if (cur.year === moment().year()) {
+        cur.leaves[`${leave.type}`] += days;
+      }
+      acc.push(cur);
+      return acc;
+    }, []);
+    await User.findByIdAndUpdate({ _id: user._id }, { leave: isValidLeaveDate }, { new: true });
+    leave.status = req.query.status;
+  } else {
+    leave.status = req.query.status;
+  }
+
+  await leave.save({ validateBeforeSave: false });
+
   res.status(200).json({
     status: 'success',
-    data: Projects,
+    message: `Leave ${req.query.status} successfully!`,
   });
 });
 
-// Update a Leave
-export const updateLeave = catchAsync(async (req, res) => {
-  console.log(req.body);
-  const { leaveType, from, to, leaveReason, leaveStatus } = req.body;
+//Get All Leaves
+export const getAllLeaves = catchAsync(async (req, res, next) => {
+  const { id } = req.query;
+  const filters = {};
 
-  const diffInMs = new Date(to) - new Date(from);
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-  if (diffInDays > 0) {
-    const totalLeave = 20;
-    const remainingLeaves = totalLeave - diffInDays;
-    
-    const UpdateLeave = await Leave.findByIdAndUpdate(
-      req.params.id,
-      { $set: {
-        leaveType,
-        from,
-        to,
-        leaveReason,
-        numberOfDays: diffInDays,
-        remainingLeaves,
-        leaveStatus
-      } },
-      { new: true }
-    );
-    res.status(201).json({
-      status: 'success',
-      message: 'Leave Update Successfully',
-      data: UpdateLeave,
-    });
-  } else {
-    res.status(404).json({
-      status: 'failed',
-      message: 'Please change your date',
-    });
+  if (id) {
+    filters._id = id;
   }
+
+  const document = await Leave.countDocuments();
+
+  const apiFeatures = new ApiFeatures(
+    Leave.find(filters).lean().sort({ updatedAt: -1 }).populate('user', ['username', 'leave']),
+    req.query
+  )
+    .searchByDate()
+    .pagination();
+
+  const leaves = await apiFeatures.query;
+
+  res.status(200).json({
+    status: 'success',
+    count: document,
+    data: leaves,
+  });
 });
 
-// Delete all Leave
-export const deleteLeave = catchAsync(async (req, res) => {
-  await Leave.findByIdAndDelete(req.params.id);
+// Get User leave form User Model
+export const getUserLeave = catchAsync(async (req, res) => {
+  const count = await Leave.countDocuments();
+  const apiFeatures = new ApiFeatures(
+    Leave.find({ user: req.user._id })
+      .lean()
+      .sort({ updatedAt: -1 })
+      .populate('user', ['username', 'leave']),
+    req.query
+  )
+    .searchByDate()
+    .pagination();
 
-  res.status(201).json({
+  const leaves = await apiFeatures.query;
+
+  res.status(200).json({
     status: 'success',
-    message: 'Leave Delete Successfully',
+    data: leaves,
+    count,
   });
 });

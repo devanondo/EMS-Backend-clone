@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
+import moment from 'moment';
 import { User } from '../models/userModel.js';
+import { ApiFeatures } from '../utils/ApiFeatures.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import { saveToken } from '../utils/saveToken.js';
@@ -8,6 +10,17 @@ import { saveToken } from '../utils/saveToken.js';
 export const registerUser = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   const isExistUser = await User.findOne({ email });
+  const data = [
+    {
+      year: moment().year(),
+      leaves: {
+        cl: 0,
+        el: 0,
+        sl: 0,
+      },
+    },
+  ];
+  req.body.leave = data;
 
   if (isExistUser) {
     return next(new AppError('Email already exists!', 403));
@@ -16,23 +29,18 @@ export const registerUser = catchAsync(async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   req.body.password = hashedPassword;
-
   const user = await User.create(req.body);
 
   res.status(200).json({
     status: 'success',
     message: 'User Created Successfully',
   });
-
-  saveToken(user, 200, res);
 });
 
 // Update user
 export const updateUser = catchAsync(async (req, res, next) => {
   const { id } = req.query;
-  console.log(req.body, 'body');
   const user = await User.findOne({ _id: id });
-
   if (!user) {
     return next(new AppError('Employee not found!', 403));
   }
@@ -49,15 +57,52 @@ export const updateUser = catchAsync(async (req, res, next) => {
   });
 });
 
+//Delete User
+export const deleteUser = catchAsync(async (req, res, next) => {
+  const { id } = req.query;
+  const user = await User.findById(id);
+  if (!user) return next(AppError('User not found', 404));
+
+  const roles = ['admin', 'superadmin'];
+
+  if (roles.includes(user.role)) {
+    return next(new AppError(`You cannot remove  ${user.role}`));
+  }
+
+  await User.findByIdAndDelete({ _id: id });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'User deleted successfully',
+  });
+});
+
+//Update User role
+export const updateUserRole = catchAsync(async (req, res, next) => {
+  const { id, role } = req.query;
+
+  await User.findByIdAndUpdate(
+    { _id: id },
+    { role: role },
+    {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Role updated successfully',
+  });
+});
 
 //Add education
 export const addEducation = catchAsync(async (req, res, next) => {
   const { id } = req.query;
 
-  console.log(id);
-
   const user = await User.findById(id);
-  if (!user) return next(AppError('User not found!', 404));
+  if (!user) return next(new AppError('User not found!', 404));
 
   user.education.push(req.body);
   await user.save({ validateBeforeSave: false });
@@ -121,7 +166,6 @@ export const login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email }).select('password');
 
-
   if (!user) return next(new AppError('User not found!', 403));
 
   const isPasswordMatched = await bcrypt.compare(password, user.password);
@@ -153,8 +197,13 @@ export const getAUser = catchAsync(async (req, res, next) => {
     filters._id = id;
   }
 
-  const users = await User.find(filters).lean().sort({ updatedAt: -1 });
+  const totalEmployee = await User.countDocuments();
 
+  const apiFeatures = new ApiFeatures(User.find(filters).lean().sort({ updatedAt: -1 }), req.query)
+    .searchEmployee()
+    .pagination();
+
+  const users = await apiFeatures.query;
   if (!users) {
     return next(new AppError('User not found!', 403));
   }
@@ -162,10 +211,9 @@ export const getAUser = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     data: users,
+    count: totalEmployee,
   });
 });
-
-
 
 //Get login user
 export const loginUser = catchAsync(async (req, res, next) => {

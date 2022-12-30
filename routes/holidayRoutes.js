@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import {
-  getHolidays,
   createHoliday,
-  updateHoliday,
   deleteHoliday,
+  getHolidays,
+  updateHoliday,
 } from '../controllers/HolidayController.js';
 import { isAuthenticatedUser } from '../middleware/auth.js';
 import { restrictTo } from '../middleware/restrictTo.js';
@@ -18,10 +18,23 @@ const router = Router();
 // router.put('/:id', isAuthenticatedUser, restrictTo('admin'), updateHoliday);
 // router.delete('/:id', isAuthenticatedUser, restrictTo('admin'), deleteHoliday);
 
+//Get holidays for all users
+router.get('/', isAuthenticatedUser, getHolidays);
 
-router.get('/', getHolidays);
-router.post('/', holidayValidateRules(), validate, createHoliday);
-router.put('/:id', updateHoliday);
-router.delete('/:id', deleteHoliday);
+//Create holiday
+router.post(
+  '/',
+  holidayValidateRules(),
+  validate,
+  isAuthenticatedUser,
+  restrictTo('admin', 'superadmin'),
+  createHoliday
+);
+
+//Update holiday
+router.put('/:id', isAuthenticatedUser, restrictTo('admin', 'superadmin'), updateHoliday);
+
+//Delete holiday
+router.delete('/:id', isAuthenticatedUser, restrictTo('admin', 'superadmin'), deleteHoliday);
 
 export const HolidayRoutes = router;

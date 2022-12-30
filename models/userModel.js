@@ -20,12 +20,14 @@ const UserSchema = new Schema(
       type: String,
     },
     phone: {
-      type: String,
+      type: Number,
       unique: true,
+      default: null,
     },
     secondaryPhone: {
-      type: String,
+      type: Number,
       unique: true,
+      default: null,
     },
     designation: {
       type: String,
@@ -34,9 +36,15 @@ const UserSchema = new Schema(
     department: {
       type: String,
     },
+    idno: {
+      type: String,
+    },
+
     address: [
       {
-        type: String,
+        address1: {
+          type: String,
+        },
       },
     ],
     education: [
@@ -53,13 +61,11 @@ const UserSchema = new Schema(
         result: {
           type: String,
         },
-        duration: {
-          start: {
-            type: String,
-          },
-          end: {
-            type: String,
-          },
+        from: {
+          type: String,
+        },
+        to: {
+          type: String,
         },
 
         outof: {
@@ -73,8 +79,10 @@ const UserSchema = new Schema(
       default: 'preview.png',
     },
 
-    //Leave
-    leave: [
+    // Leave
+    leave: [],
+
+    project: [
       {
         id: {
           type: mongoose.Schema.ObjectId,
@@ -93,7 +101,7 @@ const UserSchema = new Schema(
       },
     ],
 
-    //Personal Info
+    // Personal Info
     birth: {
       type: String,
     },
@@ -111,7 +119,7 @@ const UserSchema = new Schema(
       type: String,
     },
 
-    //Emergency Contact
+    // Emergency Contact
     emergency: {
       ename: {
         type: String,
@@ -139,8 +147,7 @@ const UserSchema = new Schema(
   },
   { timestamps: true }
 );
-
-//JWT TOKEN
+// JWT TOKEN
 UserSchema.methods.getJWTToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,

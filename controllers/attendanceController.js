@@ -1,54 +1,95 @@
-import catchAsync from '../utils/catchAsync.js';
+import moment from 'moment';
 import { Attendance } from '../models/attendanceModel.js';
+import { ApiFeatures } from '../utils/ApiFeatures.js';
+import catchAsync from '../utils/catchAsync.js';
 
-// Create a attendance
-export const createAttendance = catchAsync(async (req, res) => {
-  await Attendance.create(req.body);
+export const createAttendance = catchAsync(async (req, res, next) => {
+  const today = moment().startOf('day');
 
-  res.status(201).json({
-    status: 'success',
-    message: 'Attendance Successful',
+  const attendance = await Attendance.findOne({
+    user: req.body.user,
+    createdAt: {
+      $gte: today.toDate(),
+      $lte: moment(today).endOf('day').toDate(),
+    },
   });
-});
 
-// Get single/all attendance
-export const getAttendances = catchAsync(async (req, res) => {
-  const { did } = req.query;
-  const filters = {};
+  if (!attendance) {
+    const data = {
+      user: req.body.user,
+      attendance: [
+        {
+          status: req.body.status,
+          time: new Date(),
+        },
+      ],
+    };
 
-  if (did) {
-    filters._id = did;
+    await Attendance.create(data);
+
+    res.status(200).json({
+      status: 'success',
+      message: `${req.body.status} Successfully!`,
+    });
   }
-  const Attendances = await Attendance.find(filters).lean().sort({ updatedAt: -1 });
+
+  attendance.attendance.push({
+    status: req.body.status,
+    time: new Date(),
+  });
+
+  await attendance.save({ validateBeforeSave: false });
   res.status(200).json({
     status: 'success',
-    data: Attendances,
+    message: `${req.body.status} Successfully!`,
   });
 });
 
-// Update a attendance
-export const updateAttendance = catchAsync(async (req, res) => {
+//Get all Attendance
+export const getAllAttendance = catchAsync(async (req, res, next) => {
+  const filters = {};
 
-  const UpdateAttendance = await Attendance.findByIdAndUpdate(
-    req.params.id,
-    {$set: req.body},
-    {new: true}
-  );
+  if (req.params.id) {
+    filters.id = req.params.id;
+  }
 
+  const count = await Attendance.countDocuments();
 
-  res.status(201).json({
+  const apiFeatures = new ApiFeatures(
+    Attendance.find(filters).lean().sort({ updatedAt: -1 }).populate('user', ['username']),
+    req.query
+  )
+    .searchByDate()
+    .pagination();
+
+  const attendance = await apiFeatures.query;
+
+  res.status(200).json({
     status: 'success',
-    message: 'Attendance Update Successfully',
-    data: UpdateAttendance,
+    data: attendance,
+    count,
   });
 });
 
-// Delete all attendance
-export const deleteAttendance = catchAsync(async (req, res) => {
-  await Attendance.findByIdAndDelete(req.params.id);
+//Get user Attendance
+export const getUserAttendance = catchAsync(async (req, res, next) => {
+  const count = await Attendance.countDocuments();
 
-  res.status(201).json({
+  const apiFeatures = new ApiFeatures(
+    Attendance.find({ user: req.query.id })
+      .lean()
+      .sort({ updatedAt: -1 })
+      .populate('user', ['username']),
+    req.query
+  )
+    .searchByDate()
+    .pagination();
+
+  const attendance = await apiFeatures.query;
+
+  res.status(200).json({
     status: 'success',
-    message: 'Attendance Delete Successfully',
+    data: attendance,
+    count,
   });
 });
