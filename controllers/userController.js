@@ -22,6 +22,19 @@ export const registerUser = catchAsync(async (req, res, next) => {
   ];
   req.body.leave = data;
 
+  const lastUser = await User.findOne().sort({ updatedAt: -1 });
+
+  let idNo = parseInt(lastUser.idno.split('-')[1]);
+  if (idNo < 100) {
+    idNo += 1;
+    idNo = 'SPL-0' + idNo;
+  } else {
+    idNo += 1;
+    idNo = 'SPL-' + idNo;
+  }
+
+  req.body.idno = idNo;
+
   if (isExistUser) {
     return next(new AppError('Email already exists!', 403));
   }

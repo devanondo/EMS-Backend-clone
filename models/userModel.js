@@ -38,6 +38,7 @@ const UserSchema = new Schema(
     },
     idno: {
       type: String,
+      unique: true,
     },
 
     address: [

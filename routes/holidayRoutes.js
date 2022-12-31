@@ -4,7 +4,7 @@ import {
   deleteHoliday,
   getHolidays,
   updateHoliday,
-} from '../controllers/HolidayController.js';
+} from '../controllers/holidayController.js';
 import { isAuthenticatedUser } from '../middleware/auth.js';
 import { restrictTo } from '../middleware/restrictTo.js';
 import { holidayValidateRules } from '../middleware/validators/holidayValidator.js';
