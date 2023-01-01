@@ -25,14 +25,16 @@ export const registerUser = catchAsync(async (req, res, next) => {
   const lastUser = await User.findOne().sort({ updatedAt: -1 });
 
   let idNo = parseInt(lastUser.idno.split('-')[1]);
-  if (idNo < 100) {
+  if (idNo < 10) {
+    idNo += 1;
+    idNo = 'SPL-00' + idNo;
+  } else if (10 < idNo && idNo < 100) {
     idNo += 1;
     idNo = 'SPL-0' + idNo;
   } else {
     idNo += 1;
     idNo = 'SPL-' + idNo;
   }
-
   req.body.idno = idNo;
 
   if (isExistUser) {
