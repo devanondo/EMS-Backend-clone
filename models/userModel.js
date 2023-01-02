@@ -76,8 +76,11 @@ const UserSchema = new Schema(
       },
     ],
     avatar: {
-      type: String,
-      default: 'preview.png',
+      public_id: String,
+      url: {
+        type: String,
+        default: 'https://i.ibb.co/3CY8BNT/profile1.png',
+      },
     },
 
     // Leave

@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { v2 as cloudinary } from 'cloudinary';
 import moment from 'moment';
 import { User } from '../models/userModel.js';
 import { ApiFeatures } from '../utils/ApiFeatures.js';
@@ -150,6 +151,37 @@ export const deleteEducation = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     message: 'Education Updated successfully',
+  });
+});
+
+//Update photo
+export const updateAvatar = catchAsync(async (req, res, next) => {
+  let user;
+  if (req.query.id) {
+    user = await User.findById({ _id: req.query.id });
+  } else {
+    user = await User.findById({ _id: req.user._id });
+  }
+  if (!user) return next(new AppError('User not found!', 404));
+
+  let myCloud = await cloudinary.uploader.upload(req.body.avatar, {
+    folder: 'solEMS/employee',
+    width: 600,
+    crop: 'scale',
+  });
+
+  const avatar = {
+    public_id: myCloud.public_id,
+    url: myCloud.secure_url,
+  };
+
+  user.avatar = avatar;
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Image updated successfully!',
   });
 });
 

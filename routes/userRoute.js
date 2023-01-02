@@ -9,6 +9,7 @@ import {
   loginUser,
   logout,
   registerUser,
+  updateAvatar,
   updateUser,
   updateUserRole,
 } from '../controllers/userController.js';
@@ -62,5 +63,8 @@ router.post('/logout', logout);
 
 // Change user role --admin
 router.patch('/role', isAuthenticatedUser, restrictTo('superadmin', 'admin'), changeUserRole);
+
+//Update employee avatar
+router.post('/avatar', isAuthenticatedUser, updateAvatar);
 
 export const userRoute = router;
