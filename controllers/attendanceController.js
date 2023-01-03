@@ -62,7 +62,10 @@ export const getAllAttendance = catchAsync(async (req, res, next) => {
   const attendance2 = await apiFeatures2.query;
 
   const apiFeatures = new ApiFeatures(
-    Attendance.find(filters).lean().sort({ updatedAt: -1 }).populate('user', ['username']),
+    Attendance.find(filters)
+      .lean()
+      .sort({ updatedAt: -1 })
+      .populate('user', ['username', 'avatar']),
     req.query
   )
     .searchByDate()
