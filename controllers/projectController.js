@@ -33,13 +33,6 @@ export const getProjects = catchAsync(async (req, res) => {
 
   const totalCount = await Project.countDocuments();
 
-  // const projects = await Project.find(filters).lean().sort({ updatedAt: -1 }).populate('client');
-
-  // const apiFeatures = new ApiFeatures(
-  //   await Project.find(filters).lean().sort({ updatedAt: -1 }).populate('client'),
-  //   req.query
-  // ).pagination();
-
   const apiFeatures = new ApiFeatures(
     Project.find(filters).lean().sort({ updatedAt: -1 }).populate('client'),
     req.query
@@ -48,6 +41,20 @@ export const getProjects = catchAsync(async (req, res) => {
     .pagination();
 
   const projects = await apiFeatures.query;
+
+  // const newProject = projects.reduce((acc, cur) => {
+  //   const newUserData = cur.teamMember.reduce(async (alld, current) => {
+  //     const user = await User.findById(current._id);
+
+  //     return user;
+  //   }, []);
+  //   console.log(newUserData, 'users');
+
+  //   cur = newUserData;
+  //   return acc;
+  // }, []);
+
+  // console.log(newProject);
 
   res.status(200).json({
     status: 'success',

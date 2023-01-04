@@ -35,7 +35,12 @@ router.delete('/role', isAuthenticatedUser, restrictTo('superadmin'), deleteDesi
 router.post('/designation', isAuthenticatedUser, restrictTo('superadmin'), createDesignation);
 
 //Get all Designation
-router.get('/designation', isAuthenticatedUser, restrictTo('superadmin'), getAllDesignation);
+router.get(
+  '/designation',
+  isAuthenticatedUser,
+  restrictTo('superadmin', 'admin'),
+  getAllDesignation
+);
 
 //Update Designation
 router.put('/designation', isAuthenticatedUser, restrictTo('superadmin'), updateDesignation);
@@ -49,7 +54,7 @@ router.delete('/designation', isAuthenticatedUser, restrictTo('superadmin'), del
 router.post('/department', isAuthenticatedUser, restrictTo('superadmin'), createDepartment);
 
 //Get all Departments
-router.get('/department', isAuthenticatedUser, restrictTo('superadmin'), getAllDepartment);
+router.get('/department', isAuthenticatedUser, restrictTo('superadmin', 'admin'), getAllDepartment);
 
 //Update Departments
 router.put('/department', isAuthenticatedUser, restrictTo('superadmin'), updateDepartment);

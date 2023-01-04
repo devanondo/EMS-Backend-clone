@@ -88,7 +88,7 @@ export const getUserAttendance = catchAsync(async (req, res, next) => {
     Attendance.find({ user: req.query.id })
       .lean()
       .sort({ updatedAt: -1 })
-      .populate('user', ['username']),
+      .populate('user', ['username', 'avatar']),
     req.query
   )
     .searchByDate()

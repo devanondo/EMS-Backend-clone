@@ -24,6 +24,7 @@ router.get('/user', isAuthenticatedUser, getProjectByEmployee);
 //Create Project
 router.post(
   '/',
+  isAuthenticatedUser,
   restrictTo('admin', 'superadmin', 'pm'),
   projectValidateRules(),
   validate,

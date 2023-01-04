@@ -5,6 +5,7 @@ import { User } from '../models/userModel.js';
 import { ApiFeatures } from '../utils/ApiFeatures.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
+import { getDiffTowDates } from '../utils/date.js';
 
 //Create leave edited
 export const createLeave = catchAsync(async (req, res, next) => {
@@ -20,15 +21,40 @@ export const createLeave = catchAsync(async (req, res, next) => {
 
   let diff = toDate.diff(fromDate, 'days') + 1;
 
-  // let months = toDate.diff(fromDate, 'months');
-  // fromDate.add(months, 'months');
-  // let days12 = toDate.diff(fromDate, 'days');
-  //months + ' ' + 'Month(s)'+ ' ' + days + " Day(s)"
+  const getMonthFirstLastDay = () => {
+    let currentDate = moment();
+    let start = currentDate.clone().startOf('month').format('MM-DD-YYYY');
+    let end = currentDate.clone().endOf('month').format('MM-DD-YYYY');
+
+    return { start, end };
+  };
 
   const user = await User.findById(id);
   if (!user) {
     return next(new AppError('User not found!', 404));
   }
+
+  req.query.from = getMonthFirstLastDay().start;
+  req.query.to = getMonthFirstLastDay().end;
+
+  //Check the taken leave within running month
+  const monthlyLeave = new ApiFeatures(
+    Leave.findOne({ user: user._id }).lean().sort({ updatedAt: -1 }),
+    req.query
+  ).searchByDate();
+
+  const existingLeave = await monthlyLeave.query;
+
+  if (existingLeave.length > 0) {
+    const totalDate = existingLeave.reduce((acc, cur) => {
+      let days = getDiffTowDates(cur.from, cur.to);
+
+      return acc + days;
+    }, 0);
+
+    if (totalDate >= 2) return next(new AppError('Please try next month'));
+  }
+
   let isCreate = false;
   const totalLeave = await TotalLeaves.find();
   user.leave.map((emLeave) => {
@@ -65,7 +91,7 @@ export const updateStatus = catchAsync(async (req, res, next) => {
   if (!leave) return next(new AppError('Leave not found!', 404));
 
   if (leave.status === req.query.status) {
-    return next(new AppError('Already in this status!', 404));
+    return next(new AppError(`Already ${req.query.status}`, 404));
   }
 
   if (req.query.status === 'approved') {
@@ -87,6 +113,7 @@ export const updateStatus = catchAsync(async (req, res, next) => {
     }, []);
     await User.findByIdAndUpdate({ _id: user._id }, { leave: isValidLeaveDate }, { new: true });
     leave.status = req.query.status;
+    leave.approvedBy = req.user._id;
   } else {
     leave.status = req.query.status;
   }
@@ -111,7 +138,10 @@ export const getAllLeaves = catchAsync(async (req, res, next) => {
   const document = await Leave.countDocuments();
 
   const apiFeatures = new ApiFeatures(
-    Leave.find(filters).lean().sort({ updatedAt: -1 }).populate('user', ['username', 'leave']),
+    Leave.find(filters)
+      .lean()
+      .sort({ updatedAt: -1 })
+      .populate('user', ['username', 'leave', 'avatar']),
     req.query
   )
     .searchByDate()
@@ -133,7 +163,7 @@ export const getUserLeave = catchAsync(async (req, res) => {
     Leave.find({ user: req.user._id })
       .lean()
       .sort({ updatedAt: -1 })
-      .populate('user', ['username', 'leave']),
+      .populate('user', ['username', 'leave', 'avatar']),
     req.query
   )
     .searchByDate()

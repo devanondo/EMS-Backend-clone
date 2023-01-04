@@ -6,7 +6,10 @@ const LeaveSchema = new Schema(
       type: mongoose.Types.ObjectId,
       ref: 'User',
     },
-
+    approvedBy: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+    },
     type: {
       type: String,
       default: '',
