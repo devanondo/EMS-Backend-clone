@@ -20,12 +20,12 @@ const UserSchema = new Schema(
       type: String,
     },
     phone: {
-      type: Number,
+      type: String,
       unique: true,
       default: null,
     },
     secondaryPhone: {
-      type: Number,
+      type: String,
       unique: true,
       default: null,
     },
