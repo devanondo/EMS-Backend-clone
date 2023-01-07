@@ -151,6 +151,7 @@ const UserSchema = new Schema(
   },
   { timestamps: true }
 );
+
 // JWT TOKEN
 UserSchema.methods.getJWTToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {

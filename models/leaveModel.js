@@ -12,25 +12,21 @@ const LeaveSchema = new Schema(
     },
     type: {
       type: String,
-      default: '',
       required: [true, 'Leave Type is required'],
     },
 
     from: {
       type: String,
-      default: '',
       required: [true, 'From Date is required'],
     },
 
     to: {
       type: String,
-      default: '',
       required: [true, 'To Date is required'],
     },
 
     reason: {
       type: String,
-      default: '',
       required: [true, 'Reason is required'],
     },
 

@@ -9,7 +9,7 @@ export const createHoliday = catchAsync(async (req, res) => {
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
   if (diffInDays > 0) {
-    await Holiday.create({ holidayName, holidayStart, holidayEnd, totalHoliday: diffInDays });
+    await Holiday.create(req.body);
     res.status(201).json({
       status: 'success',
       message: 'Holiday Created Successfully',
@@ -20,8 +20,6 @@ export const createHoliday = catchAsync(async (req, res) => {
       message: 'Please change your date',
     });
   }
-
-  // await Holiday.create(req.body);
 });
 
 // Get single/all Holiday
@@ -51,27 +49,20 @@ export const getHolidays = catchAsync(async (req, res, next) => {
 export const updateHoliday = catchAsync(async (req, res) => {
   const { holidayName, totalHoliday, holidayStart, holidayEnd } = req.body;
 
-  const diffInMs = new Date(holidayEnd) - new Date(holidayStart);
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  // const diffInMs = new Date(holidayEnd) - new Date(holidayStart);
+  // const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
-  if (diffInDays > 0) {
-    const UpdateHoliday = await Holiday.findByIdAndUpdate(
-      req.params.id,
-      { $set: { holidayName, holidayStart, holidayEnd, totalHoliday: diffInDays } },
-      { new: true }
-    );
+  const UpdateHoliday = await Holiday.findByIdAndUpdate(
+    req.params.id,
+    { $set: { holidayName, holidayStart, holidayEnd, totalHoliday } },
+    { new: true }
+  );
 
-    res.status(201).json({
-      status: 'success',
-      message: 'Holiday Update Successfully',
-      data: UpdateHoliday,
-    });
-  } else {
-    res.status(201).json({
-      status: 'failed',
-      message: 'Please change your date',
-    });
-  }
+  res.status(201).json({
+    status: 'success',
+    message: 'Holiday Update Successfully',
+    data: UpdateHoliday,
+  });
 });
 
 // Delete all Holiday

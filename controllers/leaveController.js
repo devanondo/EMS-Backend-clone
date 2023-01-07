@@ -57,18 +57,22 @@ export const createLeave = catchAsync(async (req, res, next) => {
 
   let isCreate = false;
   const totalLeave = await TotalLeaves.find();
-  user.leave.map((emLeave) => {
-    totalLeave[0].leaveType.map((item) => {
-      if (item.title === type) {
-        let alreadyTakenLeave = emLeave.leaves[`${type}`];
 
-        if (alreadyTakenLeave + diff <= item.days) {
-          isCreate = true;
-        } else {
-          return next(new AppError('Please select valid date', 404));
+  user.leave.map((emLeave) => {
+    if (emLeave.year === moment().year()) {
+      totalLeave[0].leaveType.map((item) => {
+        if (item.title === type) {
+          let alreadyTakenLeave = emLeave.leaves[`${type}`];
+
+          console.log(alreadyTakenLeave);
+          if (alreadyTakenLeave + diff <= item.days) {
+            isCreate = true;
+          } else {
+            return next(new AppError('Please select valid date', 404));
+          }
         }
-      }
-    });
+      });
+    }
   });
 
   if (isCreate) {
@@ -141,7 +145,8 @@ export const getAllLeaves = catchAsync(async (req, res, next) => {
     Leave.find(filters)
       .lean()
       .sort({ updatedAt: -1 })
-      .populate('user', ['username', 'leave', 'avatar']),
+      .populate('user', ['username', 'leave', 'avatar', 'designation'])
+      .populate('approvedBy', ['username', 'avatar', 'designation']),
     req.query
   )
     .searchByDate()
@@ -163,7 +168,8 @@ export const getUserLeave = catchAsync(async (req, res) => {
     Leave.find({ user: req.user._id })
       .lean()
       .sort({ updatedAt: -1 })
-      .populate('user', ['username', 'leave', 'avatar']),
+      .populate('user', ['username', 'leave', 'avatar', 'designation'])
+      .populate('approvedBy', ['username', 'avatar', 'designation']),
     req.query
   )
     .searchByDate()
