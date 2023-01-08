@@ -64,7 +64,6 @@ export const createLeave = catchAsync(async (req, res, next) => {
         if (item.title === type) {
           let alreadyTakenLeave = emLeave.leaves[`${type}`];
 
-          console.log(alreadyTakenLeave);
           if (alreadyTakenLeave + diff <= item.days) {
             isCreate = true;
           } else {
