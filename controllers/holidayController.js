@@ -6,7 +6,7 @@ import catchAsync from '../utils/catchAsync.js';
 export const createHoliday = catchAsync(async (req, res) => {
   const { holidayName, totalHoliday, holidayStart, holidayEnd } = req.body;
   const diffInMs = new Date(holidayEnd) - new Date(holidayStart);
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24) + 1;
 
   if (diffInDays > 0) {
     await Holiday.create(req.body);
