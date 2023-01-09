@@ -53,8 +53,6 @@ export const getAllAttendance = catchAsync(async (req, res, next) => {
     filters.id = req.params.id;
   }
 
-  const count = await Attendance.countDocuments();
-
   const apiFeatures2 = new ApiFeatures(
     Attendance.find(filters).lean().sort({ updatedAt: -1 }).populate('user', ['username']),
     req.query
@@ -65,7 +63,7 @@ export const getAllAttendance = catchAsync(async (req, res, next) => {
     Attendance.find(filters)
       .lean()
       .sort({ updatedAt: -1 })
-      .populate('user', ['username', 'avatar']),
+      .populate('user', ['username', 'avatar', 'idno']),
     req.query
   )
     .searchByDate()
@@ -76,29 +74,32 @@ export const getAllAttendance = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: attendance,
-    count,
+    count: attendance2.length,
   });
 });
 
 //Get user Attendance
 export const getUserAttendance = catchAsync(async (req, res, next) => {
-  const count = await Attendance.countDocuments();
-
   const apiFeatures = new ApiFeatures(
     Attendance.find({ user: req.query.id })
       .lean()
       .sort({ updatedAt: -1 })
-      .populate('user', ['username', 'avatar']),
+      .populate('user', ['username', 'avatar', 'idno']),
     req.query
   )
     .searchByDate()
     .pagination();
+  const apiFeatures2 = new ApiFeatures(
+    Attendance.find({ user: req.query.id }).lean().sort({ updatedAt: -1 }),
+    req.query
+  ).searchByDate();
 
   const attendance = await apiFeatures.query;
+  const attendance2 = await apiFeatures2.query;
 
   res.status(200).json({
     status: 'success',
     data: attendance,
-    count,
+    count: attendance2.length,
   });
 });

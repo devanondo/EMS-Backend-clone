@@ -138,8 +138,6 @@ export const getAllLeaves = catchAsync(async (req, res, next) => {
     filters._id = id;
   }
 
-  const document = await Leave.countDocuments();
-
   const apiFeatures = new ApiFeatures(
     Leave.find(filters)
       .lean()
@@ -151,18 +149,27 @@ export const getAllLeaves = catchAsync(async (req, res, next) => {
     .searchByDate()
     .pagination();
 
+  const apiFeatures2 = new ApiFeatures(
+    Leave.find(filters)
+      .lean()
+      .sort({ updatedAt: -1 })
+      .populate('user', ['username', 'leave', 'avatar', 'designation'])
+      .populate('approvedBy', ['username', 'avatar', 'designation']),
+    req.query
+  ).searchByDate();
+
   const leaves = await apiFeatures.query;
+  const leaves2 = await apiFeatures2.query;
 
   res.status(200).json({
     status: 'success',
-    count: document,
+    count: leaves2.length,
     data: leaves,
   });
 });
 
 // Get User leave form User Model
 export const getUserLeave = catchAsync(async (req, res) => {
-  const count = await Leave.countDocuments();
   const apiFeatures = new ApiFeatures(
     Leave.find({ user: req.user._id })
       .lean()
@@ -174,11 +181,21 @@ export const getUserLeave = catchAsync(async (req, res) => {
     .searchByDate()
     .pagination();
 
+  const apiFeatures2 = new ApiFeatures(
+    Leave.find({ user: req.user._id })
+      .lean()
+      .sort({ updatedAt: -1 })
+      .populate('user', ['username', 'leave', 'avatar', 'designation'])
+      .populate('approvedBy', ['username', 'avatar', 'designation']),
+    req.query
+  ).searchByDate();
+
   const leaves = await apiFeatures.query;
+  const leaves2 = await apiFeatures2.query;
 
   res.status(200).json({
     status: 'success',
     data: leaves,
-    count,
+    count: leaves2.length,
   });
 });

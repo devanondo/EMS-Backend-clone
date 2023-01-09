@@ -244,13 +244,18 @@ export const getAUser = catchAsync(async (req, res, next) => {
     filters._id = id;
   }
 
-  const totalEmployee = await User.countDocuments();
-
   const apiFeatures = new ApiFeatures(User.find(filters).lean().sort({ updatedAt: -1 }), req.query)
     .searchEmployee()
     .pagination();
 
+  const apiFeatures2 = new ApiFeatures(
+    User.find(filters).lean().sort({ updatedAt: -1 }),
+    req.query
+  ).searchEmployee();
+
   const users = await apiFeatures.query;
+  const users2 = await apiFeatures2.query;
+
   if (!users) {
     return next(new AppError('User not found!', 403));
   }
@@ -258,7 +263,7 @@ export const getAUser = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     data: users,
-    count: totalEmployee,
+    count: apiFeatures2.length,
   });
 });
 
@@ -284,6 +289,8 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
   if (id) {
     filter._id = id;
   }
+
+  if (role === 'superadmin') return next(new AppError('Unable to change role!'));
 
   const user = await User.findByIdAndUpdate(
     id,

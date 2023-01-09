@@ -58,7 +58,6 @@ export const getTask = catchAsync(async (req, res, next) => {
   if (id) {
     filters._id = id;
   }
-  const totalCount = await Task.countDocuments();
 
   const apiFeatures = new ApiFeatures(
     Task.find(filters)
@@ -72,19 +71,18 @@ export const getTask = catchAsync(async (req, res, next) => {
     .searchTitle()
     .pagination();
 
-  const tasks = await apiFeatures.query;
+  const apiFeatures2 = new ApiFeatures(
+    Task.find(filters).lean().sort({ updatedAt: -1 }),
+    req.query
+  ).searchTitle();
 
-  // const tasks = await Task.find(filters)
-  //   .lean()
-  //   .sort({ updatedAt: -1 })
-  //   .populate('assignTo', ['username', 'designation'])
-  //   .populate('assignFrom', ['username', 'designation'])
-  //   .populate('project', ['projectName', 'teamMember']);
+  const tasks = await apiFeatures.query;
+  const tasks2 = await apiFeatures2.query;
 
   res.status(200).json({
     status: 'success',
     data: tasks,
-    count: totalCount,
+    count: tasks2.length,
   });
 });
 

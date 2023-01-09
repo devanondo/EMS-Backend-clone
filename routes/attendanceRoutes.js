@@ -5,12 +5,13 @@ import {
   getUserAttendance,
 } from '../controllers/attendanceController.js';
 import { isAuthenticatedUser } from '../middleware/auth.js';
-import { restrictTo } from '../middleware/restrictTo.js';
 
 const router = Router();
 
+// isAuthenticatedUser, restrictTo('superadmin', 'admin'),
+
 // routes
-router.get('/', isAuthenticatedUser, restrictTo('superadmin', 'admin'), getAllAttendance);
+router.get('/', getAllAttendance);
 
 //Get user routes
 router.get('/user', isAuthenticatedUser, getUserAttendance);
