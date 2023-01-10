@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import {
   addEducation,
-  changeUserRole,
   deleteEducation,
   deleteUser,
   getAUser,
@@ -62,7 +61,7 @@ router.post('/login', login);
 router.post('/logout', logout);
 
 // Change user role --admin
-router.patch('/role', isAuthenticatedUser, restrictTo('superadmin', 'admin'), changeUserRole);
+// router.patch('/role', isAuthenticatedUser, restrictTo('superadmin', 'admin'), changeUserRole);
 
 //Update employee avatar
 router.post('/avatar', isAuthenticatedUser, updateAvatar);

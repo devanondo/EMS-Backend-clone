@@ -55,6 +55,14 @@ export const registerUser = catchAsync(async (req, res, next) => {
 
 // Update user
 export const updateUser = catchAsync(async (req, res, next) => {
+  if (req.user._id.toString() === req.query.id.toString()) {
+    return next(new AppError("You can't change self!", 500));
+  }
+
+  if (req.body.role === 'superadmin') {
+    return next(new AppError('Internal Server Error', 500));
+  }
+
   const { id } = req.query;
   const user = await User.findOne({ _id: id });
   if (!user) {
@@ -96,6 +104,10 @@ export const deleteUser = catchAsync(async (req, res, next) => {
 //Update User role
 export const updateUserRole = catchAsync(async (req, res, next) => {
   const { id, role } = req.query;
+
+  if (role === 'superadmin') {
+    return next(new AppError('Unable to change role!', 500));
+  }
 
   await User.findByIdAndUpdate(
     { _id: id },
@@ -290,7 +302,9 @@ export const changeUserRole = catchAsync(async (req, res, next) => {
     filter._id = id;
   }
 
-  if (role === 'superadmin') return next(new AppError('Unable to change role!'));
+  if (role === 'superadmin') {
+    return next(new AppError('Unable to change role!', 500));
+  }
 
   const user = await User.findByIdAndUpdate(
     id,

@@ -12,7 +12,6 @@ export class ApiFeatures {
             { username: { $regex: this.queryStr.keyword, $options: 'i' } },
             { role: { $regex: this.queryStr.keyword, $options: 'i' } },
             { idno: { $regex: this.queryStr.keyword, $options: 'i' } },
-            { role: { $regex: this.queryStr.keyword, $options: 'i' } },
             { designation: { $regex: this.queryStr.keyword, $options: 'i' } },
           ],
         }
