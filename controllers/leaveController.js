@@ -12,6 +12,11 @@ export const createLeave = catchAsync(async (req, res, next) => {
   req.body.id = req.user._id;
   const { type, id, from, to, reason } = req.body;
 
+  const user = await User.findById(id);
+  if (!user) {
+    return next(new AppError('User not found!', 404));
+  }
+
   const fromDate = moment(from, 'MM-DD-YYYY');
   const toDate = moment(to, 'MM-DD-YYYY');
 
@@ -21,27 +26,63 @@ export const createLeave = catchAsync(async (req, res, next) => {
 
   let diff = toDate.diff(fromDate, 'days') + 1;
 
-  const getMonthFirstLastDay = () => {
-    let currentDate = moment();
+  const getMonthFirstLastDay = (dates, format) => {
+    let currentDate = moment(dates, format);
     let start = currentDate.clone().startOf('month').format('MM-DD-YYYY');
     let end = currentDate.clone().endOf('month').format('MM-DD-YYYY');
 
     return { start, end };
   };
 
-  const user = await User.findById(id);
-  if (!user) {
-    return next(new AppError('User not found!', 404));
+  //Checking request leave as per type with total leave in a year
+  const totalAppliedLeave = await (
+    await Leave.find({ user: id, type: type })
+  )?.reduce((acc, cur) => {
+    let totalAppliedDay = getDiffTowDates(cur.from, cur.to);
+
+    acc += totalAppliedDay;
+    return acc;
+  }, 0);
+
+  const totalLeaveFromAdmin = await TotalLeaves.findOne();
+
+  totalLeaveFromAdmin.leaveType.map((item) => {
+    if (item.title === type) {
+      if (totalAppliedLeave + diff > item.days) {
+        return next(new AppError(`You have no leave available`));
+      }
+    }
+  });
+
+  const monthNow = moment().month();
+  const monthRequest = moment(fromDate).month();
+
+  //Checking running month and next months-prepare query for search by date
+  if (monthNow === monthRequest) {
+    req.query.from = getMonthFirstLastDay().start;
+    req.query.to = getMonthFirstLastDay().end;
+  } else if (monthNow < monthRequest) {
+    req.query.from = getMonthFirstLastDay(req.body.from, 'MM-DD-YYYY').start;
+    req.query.to = getMonthFirstLastDay(req.body.to, 'MM-DD-YYYY').end;
+  } else {
+    return next(new AppError('Please select valid date!'));
   }
 
-  req.query.from = getMonthFirstLastDay().start;
-  req.query.to = getMonthFirstLastDay().end;
+  //Check the taken leave in running month with pending status
+  const monthlyLeavePending = new ApiFeatures(
+    Leave.findOne({ user: user._id, status: 'pending' }).lean().sort({ updatedAt: -1 }),
+    req.query
+  ).searchLeaveByDate();
+  const existingLeavePending = await monthlyLeavePending.query;
 
-  //Check the taken leave within running month
+  if (existingLeavePending.length > 0)
+    return next(new AppError('A leave already in pending, Approved first!')); //Throw Error while a leave in pending -- working well
+
+  //Check total leave in running month
   const monthlyLeave = new ApiFeatures(
     Leave.findOne({ user: user._id }).lean().sort({ updatedAt: -1 }),
     req.query
-  ).searchByDate();
+  ).searchLeaveByDate();
 
   const existingLeave = await monthlyLeave.query;
 
@@ -52,7 +93,8 @@ export const createLeave = catchAsync(async (req, res, next) => {
       return acc + days;
     }, 0);
 
-    if (totalDate >= 2) return next(new AppError('Please try next month'));
+    if (totalDate >= 2)
+      return next(new AppError('You already taken leave in this month, Please try next month!'));
   }
 
   let isCreate = false;
@@ -75,7 +117,16 @@ export const createLeave = catchAsync(async (req, res, next) => {
   });
 
   if (isCreate) {
-    const newLeave = await Leave.create({ user: id, type, from, to, reason });
+    const formatDateFrom = new Date(from);
+    const formatDateTo = new Date(to);
+
+    const newLeave = await Leave.create({
+      user: id,
+      type,
+      from,
+      to,
+      reason,
+    });
 
     res.status(200).json({
       status: 'success',

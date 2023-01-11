@@ -41,6 +41,18 @@ export class ApiFeatures {
     this.query = this.query.find({ ...keyword });
     return this;
   }
+  searchLeaveByDate() {
+    const keyword = this.queryStr.from
+      ? {
+          from: {
+            $gte: moment(this.queryStr.from, 'MM-DD-YYYY').format('MM-DD-YYYY'),
+            $lte: moment(this.queryStr.to, 'MM-DD-YYYY').format('MM-DD-YYYY'),
+          },
+        }
+      : {};
+    this.query = this.query.find({ ...keyword });
+    return this;
+  }
 
   //Pagination
   pagination() {

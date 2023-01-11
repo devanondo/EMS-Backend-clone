@@ -55,11 +55,13 @@ export const registerUser = catchAsync(async (req, res, next) => {
 
 // Update user
 export const updateUser = catchAsync(async (req, res, next) => {
-  if (req.user._id.toString() === req.query.id.toString()) {
-    return next(new AppError("You can't change self!", 500));
+  const superAdmin = ['superadmin'];
+
+  if (req.user._id.toString() === req.query.id.toString() && !superAdmin.includes(req.body.role)) {
+    return next(new AppError("You can't change yourself!", 500));
   }
 
-  if (req.body.role === 'superadmin') {
+  if (req.body.role === 'superadmin' && req.user._id.toString() !== req.query.id.toString()) {
     return next(new AppError('Internal Server Error', 500));
   }
 

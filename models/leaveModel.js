@@ -16,12 +16,12 @@ const LeaveSchema = new Schema(
     },
 
     from: {
-      type: String,
+      type: Date,
       required: [true, 'From Date is required'],
     },
 
     to: {
-      type: String,
+      type: Date,
       required: [true, 'To Date is required'],
     },
 
@@ -32,7 +32,7 @@ const LeaveSchema = new Schema(
 
     status: {
       type: String,
-      default: 'Pending',
+      default: 'pending',
       required: [true, 'Leave Status is required'],
     },
   },
