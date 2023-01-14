@@ -47,21 +47,15 @@ export const getHolidays = catchAsync(async (req, res, next) => {
 
 // Update a Holiday
 export const updateHoliday = catchAsync(async (req, res) => {
-  const { holidayName, totalHoliday, holidayStart, holidayEnd } = req.body;
-
-  // const diffInMs = new Date(holidayEnd) - new Date(holidayStart);
-  // const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
   const UpdateHoliday = await Holiday.findByIdAndUpdate(
     req.params.id,
-    { $set: { holidayName, holidayStart, holidayEnd, totalHoliday } },
+    { $set: req.body },
     { new: true }
   );
 
   res.status(201).json({
     status: 'success',
     message: 'Holiday Update Successfully',
-    data: UpdateHoliday,
   });
 });
 
