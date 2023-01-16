@@ -109,7 +109,6 @@ export const getAttendanceByDate = catchAsync(async (req, res, next) => {
   ).pagination();
 
   const attendance = await apiFeatures.query;
-
   res.status(200).json({
     status: 'success',
     data: attendance,
