@@ -9,7 +9,7 @@ const HolidaySchema = new Schema(
     },
 
     holidayStart: {
-      type: String,
+      type: Date,
       default: '',
       required: [true, 'Holiday Start Date is required'],
     },
@@ -19,7 +19,7 @@ const HolidaySchema = new Schema(
     },
 
     holidayEnd: {
-      type: String,
+      type: Date,
       default: '',
       required: [true, 'Holiday End Date is required'],
     },

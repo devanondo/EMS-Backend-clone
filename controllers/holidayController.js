@@ -29,18 +29,18 @@ export const getHolidays = catchAsync(async (req, res, next) => {
 
   if (did) {
     filters._id = did;
-    const Projects = await Holiday.find(filters).lean().sort({ updatedAt: -1 });
-    if (!Projects) return next(new AppError('Holidays not found..!', 404));
+    const holiday = await Holiday.find(filters).lean().sort({ holidayStart: 1 });
+    if (!holiday) return next(new AppError('Holidays not found..!', 404));
 
     res.status(200).json({
       status: 'success',
-      data: Projects,
+      data: holiday,
     });
   } else {
-    const Projects = await Holiday.find().lean().sort({ updatedAt: -1 });
+    const holiday = await Holiday.find().lean().sort({ holidayStart: 1 });
     res.status(200).json({
       status: 'success',
-      data: Projects,
+      data: holiday,
     });
   }
 });

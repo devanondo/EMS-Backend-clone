@@ -277,7 +277,7 @@ export const getAUser = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     data: users,
-    count: apiFeatures2.length,
+    count: users2.length,
   });
 });
 
