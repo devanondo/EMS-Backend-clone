@@ -30,11 +30,13 @@ export class ApiFeatures {
     return this;
   }
   searchByDate() {
+    // const toDate = moment(this.queryStr.to, "MM-DD-YYYY").subtract(-30, "days").format("MM-DD-YYYY")
+
     const keyword = this.queryStr.from
       ? {
           createdAt: {
             $gte: moment(this.queryStr.from, 'MM-DD-YYYY').format('MM-DD-YYYY'),
-            $lte: moment(this.queryStr.to, 'MM-DD-YYYY').format('MM-DD-YYYY'),
+            $lte: moment(this.queryStr.to, 'MM-DD-YYYY').subtract(-1, 'days').format('MM-DD-YYYY'),
           },
         }
       : {};
