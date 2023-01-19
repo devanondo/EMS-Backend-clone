@@ -14,14 +14,12 @@ const ProjectSchema = new Schema(
     },
 
     startDate: {
-      type: String,
-      default: '',
+      type: Date,
       required: [true, 'Start Date is required'],
     },
 
     endDate: {
-      type: String,
-      default: '',
+      type: Date,
       required: [true, 'End Date is required'],
     },
 
@@ -84,6 +82,10 @@ const ProjectSchema = new Schema(
     file: {
       type: String,
       default: '',
+    },
+    status: {
+      type: String,
+      default: 'pending',
     },
   },
   { timestamps: true }

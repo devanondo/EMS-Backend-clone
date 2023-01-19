@@ -4,7 +4,7 @@ import {
   getAllLeaves,
   getUserLeave,
   updateStatus,
-} from '../controllers/LeaveController.js';
+} from '../controllers/leaveController.js';
 import {
   createTotalLeave,
   deleteTotalLeave,
