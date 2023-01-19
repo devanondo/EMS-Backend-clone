@@ -1,4 +1,4 @@
-import { Holiday } from '../models/HolidayModel.js';
+import { Holiday } from '../models/holidayModel.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 
