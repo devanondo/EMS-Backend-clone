@@ -6,7 +6,7 @@ import {
   getProjects,
   progressUpdate,
   updateProject,
-} from '../controllers/ProjectController.js';
+} from '../controllers/projectController.js';
 import { isAuthenticatedUser } from '../middleware/auth.js';
 import { restrictTo } from '../middleware/restrictTo.js';
 import { projectValidateRules } from '../middleware/validators/projectValidator.js';
