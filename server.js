@@ -93,6 +93,16 @@ io.on('connection', (socket) => {
     });
   });
 
+  //send notification to all
+  socket.on('sendNotificationToAll', ({ senderId, receiverId, type }) => {
+    const receiver = getUser(receiverId);
+
+    io.to(receiver.socketId).emit('getNotification', {
+      senderId,
+      type,
+    });
+  });
+
   getApiAndEmit(socket);
   socket.on('disconnect', () => {
     console.log('Disconnected');
