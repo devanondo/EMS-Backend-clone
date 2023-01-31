@@ -75,7 +75,7 @@ const getUser = (userId) => {
 io.on('connection', (socket) => {
   console.log('Connected');
 
-  //take user id and socket id
+  // take user id and socket id
   socket.on('addUser', ({ userId }) => {
     addUser(userId, socket.id);
     console.log(userId);
@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
     io.emit('getUsers', users);
   });
 
-  //send and get message from client
+  // send and get message from client
   socket.on('sendNotification', ({ senderId, receiverId, type }) => {
     const receiver = getUser(receiverId);
 
@@ -93,7 +93,7 @@ io.on('connection', (socket) => {
     });
   });
 
-  //send notification to all
+  // send notification to all
   socket.on('sendNotificationToAll', ({ senderId, receiverId, type }) => {
     const receiver = getUser(receiverId);
 
@@ -123,6 +123,6 @@ const getApiAndEmit = (socket) => {
 app.set('port', process.env.PORT || 5000);
 
 httpServer.listen(app.get('port'), function () {
-  var port = httpServer.address().port;
+  const port = httpServer.address().port;
   console.log('Running on : ', port);
 });
